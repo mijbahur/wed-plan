@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { uploadImage } from "@/lib/upload-image";
 
 const initialForm = {
     name: "",
@@ -55,31 +56,7 @@ export default function SignUpPage() {
         console.log("Profile photo:", profilePhoto);
         if (profilePhoto) {
             try {
-                const uploadData = new FormData();
-                uploadData.append("image", profilePhoto);
-
-                const uploadResponse = await fetch("/api/uploads/public", {
-                    method: "POST",
-                    body: uploadData,
-                });
-                const uploadResult = (await uploadResponse.json()) as {
-                    success?: boolean;
-                    data?: { url?: string };
-                    error?: { message?: string };
-                };
-
-                if (
-                    !uploadResponse.ok ||
-                    !uploadResult.success ||
-                    !uploadResult.data?.url
-                ) {
-                    throw new Error(
-                        uploadResult.error?.message ??
-                            "Could not upload your profile photo.",
-                    );
-                }
-
-                image = uploadResult.data.url;
+                image = await uploadImage(profilePhoto);
             } catch (error) {
                 setIsSubmitting(false);
                 toast.error(

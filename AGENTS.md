@@ -74,7 +74,7 @@ wed-plan-server/
 - Keep JavaScript ESM unless the owner asks for a TS migration. Use `node --watch index.js` for development (add a `dev` script when touching `package.json`).
 - Do not delete the existing bookings stub without replacing it with the real bookings module.
 - New server code goes in `lib/`, `routes/`, `models/`, `middleware/`; add `services/` for Stripe/ImgBB and `scripts/` for seeds.
-- Env is read once in `lib/env.js`; extend that file instead of reading `process.env` in routes. It currently hardcodes `DB_NAME = "wed_plan_db"` — read `process.env.DB_NAME` when extending it.
+- Env is read once in `lib/env.js`; extend that file instead of reading `process.env` in routes. It currently hardcodes `DB_NAME = "wed-plan-db"` — read `process.env.DB_NAME` when extending it.
 - `lib/db.js` exports the shared `MongoClient`, `db`, and collections. Better Auth must use the same client/database.
 
 ## Next.js 16 rules (this repo is not the version you remember)

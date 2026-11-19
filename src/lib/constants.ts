@@ -5,6 +5,15 @@ import {
 
 import type { Role } from "./types";
 
+export const CATEGORIES = [
+  { name: "Photography & Videography"},
+  { name: "Wedding Venues"},
+  { name: "Decoration & Florist"},
+  { name: "Catering Services"},
+  { name: "Makeup & Styling"},
+  { name: "Wedding Fashion"},
+];
+
 interface MenuItem {
     label: string;
     href: string;
@@ -16,22 +25,22 @@ interface MenuItem {
 export const dashboardMenus: Record<Role, MenuItem[]> = {
     customer: [
         { label: "Overview", href: "/dashboard/customer", icon: LayoutDashboard },
-        { label: "My Bookings", href: "/dashboard/my-bookings", icon: CalendarCheck },
+        { label: "My Bookings", href: "/dashboard/customer/my-bookings", icon: CalendarCheck },
         { label: "Profile Settings", href: "/dashboard/profile", icon: UserCog },
     ],
     vendor: [
         { label: "Overview", href: "/dashboard/vendor", icon: LayoutDashboard },
-        { label: "My Services", href: "/dashboard/my-services", icon: Briefcase },
-        { label: "Add Service", href: "/dashboard/add-service", icon: PlusCircle },
-        { label: "Booking Requests", href: "/dashboard/booking-requests", icon: Inbox },
-        { label: "Subscription", href: "/dashboard/subscription", icon: Crown },
+        { label: "My Services", href: "/dashboard/vendor/services", icon: Briefcase },
+        { label: "Add Service", href: "/dashboard/vendor/services/new", icon: PlusCircle },
+        { label: "Booking Requests", href: "/dashboard/vendor/booking-requests", icon: Inbox },
+        { label: "Subscription", href: "/dashboard/vendor/subscription", icon: Crown },
         { label: "Profile Settings", href: "/dashboard/profile", icon: UserCog },
     ],
     admin: [
         { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
-        { label: "Manage Users", href: "/dashboard/users", icon: Users },
-        { label: "Manage Services", href: "/dashboard/services", icon: ClipboardCheck },
-        { label: "Transactions", href: "/dashboard/transactions", icon: Receipt },
+        { label: "Manage Users", href: "/dashboard/admin/users", icon: Users },
+        { label: "Manage Services", href: "/dashboard/admin/services", icon: ClipboardCheck },
+        { label: "Transactions", href: "/dashboard/admin/transactions", icon: Receipt },
         { label: "Profile Settings", href: "/dashboard/profile", icon: UserCog },
     ],
 };
