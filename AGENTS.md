@@ -14,10 +14,10 @@ Read this file before changing anything. It records the agreed architecture for 
 
 ## Project status
 
-- Planning/design analysis is complete. Implementation has not started.
-- This repository is the **client**. The Express API belongs in a **separate server repository**.
+- Planning/design analysis is complete. Client implementation has not started; the server repo contains a starter Express + MongoDB boilerplate.
+- This repository is the **client**. The Express API lives in the separate **server repo** at `../wed-plan-server` (local path: `C:\Users\User\Downloads\WD\A09\wed-plan-server`).
 - Do not build large features in one pass. Work feature by feature, test, then commit.
-- Requirements live in `docs/Assignment 9-Category_004.pdf` and `docs/A9_Common_Development_Guidelines.pdf`. The design source is `docs/WedPlan.fig` (22 MB Figma export; extract embedded photos, do not parse the binary).
+- Requirements live in `docs/Assignment 9-Category_004.pdf` and `docs/A9_Common_Development_Guidelines.pdf`. The design source is `docs/WedPlan.fig` (2.2 MB Figma export; extract embedded photos, do not parse the binary).
 
 ## Product summary
 
@@ -34,7 +34,7 @@ Two GitHub repos, as required by the assignment:
 | Repo | Stack | Responsibility |
 |---|---|---|
 | this repo | Next.js 16 App Router, React 19, TS, Tailwind v4, shadcn (Base UI) | All UI, auth screens, session handling, API calls |
-| `wed-plan-server` (to create) | Express.js, TypeScript, MongoDB driver, Better Auth, Stripe, ImgBB | Auth, business logic, validation, ownership/role checks, payments, uploads |
+| `wed-plan-server` (exists) | Express 5, JavaScript ESM, native MongoDB driver, Better Auth (JWT plugin), Stripe, ImgBB | Auth, JWT/JWKS, business logic, validation, ownership/role checks, payments, uploads |
 
 ```
 Browser → Next.js (Vercel) → next.config rewrites /api/* → Express (Render/Railway)
@@ -52,8 +52,30 @@ Rules:
 - The client **never** connects to MongoDB and never holds server secrets.
 - The server **never** renders UI.
 - Browser traffic goes through Next `rewrites` for same-origin cookies and no CORS. The Stripe webhook is the only endpoint hit directly on the server URL.
-- Business APIs use `Authorization: Bearer <jwt>`; the Better Auth session cookie (httpOnly, first-party via the proxy) restores the session and mints new JWTs on refresh.
+- Better Auth owns the entire auth flow (email/password, Google, sessions, users). Its **JWT plugin** issues the token used by the Express business APIs; the session cookie only keeps the browser logged in and is exchanged for a fresh JWT via `authClient.token()`.
+- Business APIs require `Authorization: Bearer <jwt>`, verified in Express against Better Auth's JWKS with `jose` (issuer/audience = Better Auth base URL). Never trust a decoded-but-unverified token.
 - Never trust `userId`, `role`, `vendorId`, prices, or payment status sent by the browser. Derive identity from the verified token and re-load the user from MongoDB.
+
+### Server repo layout (existing)
+
+Path: `../wed-plan-server` (sibling directory), JavaScript ESM (`"type": "module"`), Express 5.
+
+```
+wed-plan-server/
+  index.js                 # app bootstrap, middleware, route mounting
+  lib/env.js               # dotenv + exported env object
+  lib/db.js                # MongoClient, db, collections
+  models/booking.model.js  # current stub
+  routes/booking.js        # placeholder bookings route
+  middleware/              # empty; auth middleware goes here
+```
+
+- Current dependencies: `express@5`, `mongodb@7`, `cors`, `dotenv`. There is no dev script, no TypeScript, and no Better Auth yet.
+- Keep JavaScript ESM unless the owner asks for a TS migration. Use `node --watch index.js` for development (add a `dev` script when touching `package.json`).
+- Do not delete the existing bookings stub without replacing it with the real bookings module.
+- New server code goes in `lib/`, `routes/`, `models/`, `middleware/`; add `services/` for Stripe/ImgBB and `scripts/` for seeds.
+- Env is read once in `lib/env.js`; extend that file instead of reading `process.env` in routes. It currently hardcodes `DB_NAME = "wed_plan_db"` — read `process.env.DB_NAME` when extending it.
+- `lib/db.js` exports the shared `MongoClient`, `db`, and collections. Better Auth must use the same client/database.
 
 ## Next.js 16 rules (this repo is not the version you remember)
 
@@ -67,13 +89,16 @@ Rules:
 
 ## Stack
 
-Installed: Next 16.4.6, React 19.3, TypeScript strict, Tailwind 4.3, `@base-ui/react`, `lucide-react`, `tw-animate-css`, shadcn.
+**UI rule: shadcn is the component library.** Use shadcn components for every control (buttons, inputs, dialogs, tables, dropdowns, sheets, toasts, etc.). Do not add HeroUI, MUI, Chakra, DaisyUI, Ant Design, or hand-rolled clones of shadcn primitives. Add new primitives with the shadcn CLI against the existing `components.json` (`base-nova` / Base UI).
+
+Installed client: Next 16.4.6, React 19.3, TypeScript strict, Tailwind 4.3, `@base-ui/react`, `lucide-react`, `tw-animate-css`, shadcn.
 
 Add when needed (client): `@tanstack/react-query`, `react-hook-form`, `zod`, `@hookform/resolvers`, `sonner`, `motion`, `better-auth`, `date-fns`, `embla-carousel-react`.
 
-Server (planned): `express`, `mongodb`, `better-auth`, `stripe`, `jose`, `zod`, `cors`, `helmet`, `morgan`, `multer`, `express-rate-limit`, `dotenv`, `tsx`.
+Server installed: `express@5`, `mongodb@7`, `cors`, `dotenv`.
+Server to add: `better-auth`, `jose`, `stripe`, `zod`, `helmet`, `morgan`, `multer`, `express-rate-limit`.
 
-Do not add a second UI library, a CSS-in-JS library, Redux, Prisma, or Mongoose unless a concrete blocker is documented.
+Do not add a second UI library, a CSS-in-JS library, Redux, Prisma, Mongoose, or a second auth system.
 
 ## Commands
 
@@ -86,7 +111,7 @@ npm run start
 npm run lint
 ```
 
-Server (planned): `npm run dev`, `npm run build`, `npm run start`, `npm run seed`, `npm run seed:admin`.
+Server (`../wed-plan-server`): currently `npm start` only (`node index.js`). Add `dev` (`node --watch index.js`), `seed`, and `seed:admin` scripts when the corresponding files exist. Run commands from the server directory, not this repo.
 
 ## Environment variables
 
@@ -95,9 +120,11 @@ Never commit `.env*` or real secrets. Client exposes only `NEXT_PUBLIC_*`.
 - Client: `NEXT_PUBLIC_APP_URL`, `API_URL` (server-only rewrite destination).
 - Server: `PORT`, `NODE_ENV`, `MONGODB_URI`, `DB_NAME`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CLIENT_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `JWT_ISSUER`, `JWT_AUDIENCE`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PREMIUM_PRICE_ID`, `IMGBB_API_KEY`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`.
 
+`BETTER_AUTH_URL` is the public auth origin the browser calls (the Next app origin when proxied); Better Auth uses it as the JWT issuer and audience by default. Override `JWT_ISSUER`/`JWT_AUDIENCE` only if intentional, and keep the Express verifier aligned. `CLIENT_URL` is the allowed browser origin used for `trustedOrigins`, CORS, and OAuth callbacks.
+
 ## Database (MongoDB Atlas)
 
-Business collections: `services`, `bookings`, `transactions`. Plus the Better Auth `users` collection (configure `user.modelName = "users"`). Better Auth's `session`, `account`, `verification`, and `jwks` are infrastructure — do not duplicate them and do not add extra business collections for the same information.
+Business collections: `services`, `bookings`, `transactions`. Plus the Better Auth `users` collection (configure `user.modelName = "users"`). Better Auth's `session`, `account`, `verification`, and `jwks` (created by the JWT plugin) are infrastructure — do not duplicate them and do not add extra business collections for the same information.
 
 | Collection | Fields | Indexes |
 |---|---|---|
@@ -115,17 +142,50 @@ Conventions:
 - Store event dates as UTC midnight; format for display with `date-fns`.
 - Never store secrets or raw card data.
 
-## Authentication and authorization
+## Authentication and authorization (locked: Better Auth + JWT plugin)
 
-- Better Auth with MongoDB adapter, email/password, Google OAuth, `jwt` + `bearer` plugins.
+Better Auth is the **only** authentication system and runs inside the Express server at `../wed-plan-server`. It owns users, credentials, Google OAuth, sessions, password hashing, and the JWT/JWKS endpoints. Do not add NextAuth, Clerk, Passport, a custom session system, or a second JWT issuer.
+
+### Server side
+
+- Use `better-auth` with the MongoDB adapter and the **existing shared `MongoClient`/`db`** from `lib/db.js`.
+- Config in `lib/auth.js`: `baseURL: env.BETTER_AUTH_URL`, `secret: env.BETTER_AUTH_SECRET`, `trustedOrigins` including `env.CLIENT_URL` and the local dev origin, email/password enabled, Google provider, and `plugins: [jwt()]`.
+- Mount Better Auth **before** `express.json()` because its handler needs the untouched request stream:
+  `app.all("/api/auth/*splat", toNodeHandler(auth))` — Express 5 wildcard syntax, not `*`.
+- Mount the Stripe webhook with `express.raw({ type: "application/json" })` **before** the global JSON parser; signature verification needs the raw body.
+- JWT plugin:
+  - `GET /api/auth/token` returns `{ token }` (client calls it via `authClient.token()`).
+  - `GET /api/auth/jwks` returns the public keys. The plugin adds the `jwks` collection; never edit it manually.
+  - Customize claims with `jwt({ jwt: { definePayload: ({ user }) => ({ id, email, role }) } })`; default expiry is 15 minutes.
+  - Default issuer and audience are the Better Auth `baseURL`. Keep them aligned with `jwtVerify`.
+- Verification middleware (`middleware/require-auth.js`):
+  - `createRemoteJWKSet(new URL(`${env.BETTER_AUTH_URL}/api/auth/jwks`))` + `jwtVerify(token, JWKS, { issuer, audience })`.
+  - Cache the JWK set; `jose` refetches when an unknown `kid` appears.
+  - Reject missing, malformed, expired, or wrongly-signed tokens with **401**.
+  - After verification, load the user from MongoDB and use the **database role**. The JWT role is a hint and may be stale. Reject `isBlocked` users with **403**.
+  - Attach a sanitized `req.user` (id, email, name, image, role, plan) — never the full DB document.
+- `requireRole("vendor" | "customer" | "admin")` composes after `requireAuth`.
+- Ownership checks (`service.vendorId === req.user.id`, `booking.customerId === req.user.id`) belong in handlers, not middleware.
+- The JWT plugin is explicitly **not a session replacement**: the session cookie remains the login state; the JWT exists only for the Express API.
+- Do not add the `bearer` plugin for business APIs. It is only needed if Better Auth's own endpoints must accept a bearer session token.
+
+### Client side
+
+- `createAuthClient({ baseURL, plugins: [jwtClient()] })` from `better-auth/client`.
+- After sign-in/sign-up/Google callback, call `authClient.token()` and keep the JWT in memory (React context/state). Do not persist it in `localStorage`.
+- The API client adds `Authorization: Bearer <jwt>` to every business request. On 401, call `authClient.token()` once and retry; if that fails, sign out.
+- On page reload, `useSession()` restores the user from the httpOnly cookie; fetch a new JWT immediately.
+- `authClient.getSession` also exposes a `set-auth-jwt` response header as a fallback; prefer `authClient.token()`.
+- Keep the navbar in sync with `useSession` and invalidate auth-dependent queries after login/logout.
+
+### Sign-up / sign-in rules
+
 - Sign-up fields: full name, email, password (min 6, one upper, one lower), optional profile image, role customer/vendor.
-- **Role escalation guard**: a user-create hook must reject `admin` (and any role other than customer/vendor) even if the client sends it. Admin accounts are created only by the seed script.
+- A Better Auth user-create hook must reject `admin` (and any role other than customer/vendor) even if the client sends it. Admin accounts are created only by the seed script.
 - Google users start with no role → `/onboarding` to choose customer/vendor once (or the documented fallback default).
 - Login redirects by role: `/dashboard/admin`, `/dashboard/vendor`, `/dashboard/customer`.
-- Every protected request: verify JWT signature/exp/iss/aud with `jose` + JWKS → load user → reject if missing/blocked → check role → check ownership → attach `req.user`.
-- Return 401 unauthenticated, 403 wrong role/blocked/not owner, 409 conflict, 422 validation.
 - Blocking a user sets `isBlocked`, deletes their sessions, and the per-request DB check rejects still-valid JWTs.
-- Profile updates use an explicit whitelist. Role, isBlocked, plan, expiry, and Stripe fields are never client-writable.
+- Profile updates use an explicit whitelist; role, isBlocked, plan, expiry, and Stripe fields are never client-writable.
 - A client-side role guard is UX only; the API is authoritative.
 
 ## Business rules (must be enforced on the server)
@@ -156,7 +216,8 @@ Envelope:
 ```
 
 - List params: `page`, `limit`, `q`, `status`, `category`, `location`, `minPrice`, `maxPrice`, `sort=price_asc|price_desc|newest`.
-- Auth via Better Auth at `/api/auth/*`.
+- Auth via Better Auth at `/api/auth/*`, including `/token` and `/jwks` for the JWT plugin.
+- Status codes: 400 malformed, 401 unauthenticated/invalid or expired JWT, 403 wrong role/blocked/not owner, 404 missing, 409 duplicate/conflict, 422 validation, 429 rate limit, 500 unexpected.
 - Public: `GET /api/health`, `/api/services`, `/api/services/featured`, `/api/services/categories`; `/api/services/:id` requires auth.
 - Profile: `GET/PATCH /api/me`.
 - Customer: `GET /api/customer/stats`, `POST /api/bookings`, `GET /api/bookings`, `GET /api/bookings/:id`, `PATCH /api/bookings/:id/cancel`.
@@ -212,26 +273,32 @@ Envelope:
 - Configure Next rewrites `/api/:path*` → `API_URL`; keep the Stripe webhook direct to the server.
 - Stripe test mode: recurring Premium price; register the webhook endpoint; use Stripe CLI locally.
 - Google OAuth: exact callback URI matching the auth topology; authorized JS origins for both dev and prod.
+- Better Auth/JWT: `BETTER_AUTH_URL` must be the same public origin used in the JWT `iss`/`aud`; `/api/auth/jwks` must be reachable from the Express process; test expired, tampered, and wrong-audience tokens.
 - Verify after deploy: refresh on every private route, direct URL access across roles, blocked user, checkout success/cancel, webhook replay, mobile widths, CORS, cold-start behavior.
+
+## Decisions locked
+
+- **UI library**: shadcn (existing `base-nova` / Base UI config) is the only component library.
+- **Auth**: Better Auth on the Express server owns the entire authentication process. The Better Auth **JWT plugin** issues tokens; Express verifies them against the JWKS endpoint with `jose`, then loads the user from MongoDB for role/blocked checks.
+- **Server**: the separate repo already exists at `../wed-plan-server`, using JavaScript ESM, Express 5, and the native MongoDB driver.
 
 ## Pending decisions (do not silently lock in)
 
-These were identified during planning and still need the project owner's confirmation. Until confirmed, implement the recommended default and leave the choice documented:
+These still need the project owner's confirmation. Until confirmed, implement the recommended default and leave the choice documented:
 
-1. Create a separate `wed-plan-server` repo (recommended: yes, required by the rubric).
-2. Better Auth on Express + Next proxy + JWT (recommended) vs auth inside Next vs direct CORS + bearer.
-3. Recurring monthly Premium (recommended) vs one-time 30-day purchase; Premium price.
-4. "3 active services" definition and expiry behavior (recommended: approved+active; grandfather existing).
-5. Duplicate-booking scope (recommended: per customer + service + date).
-6. Google role onboarding (recommended: `/onboarding` when role is null).
-7. Currency for service prices and Stripe.
-8. Admin seed email/password.
-9. Exact Figma tokens/fonts and canonical frames.
+1. Recurring monthly Premium (recommended) vs one-time 30-day purchase; Premium price.
+2. "3 active services" definition and expiry behavior (recommended: approved+active; grandfather existing).
+3. Duplicate-booking scope (recommended: per customer + service + date).
+4. Google role onboarding (recommended: `/onboarding` when role is null).
+5. Currency for service prices and Stripe.
+6. Admin seed email/password.
+7. Exact Figma tokens/fonts and canonical frames.
 
 Non-blocking defaults: customer-only bookings; material service edits reset to pending; soft delete services; `isActive` only (no date calendar); event date today or later; no reviews/chat/email flows; server-side regex search + filters + sort + pagination; six fixed categories.
 
 ## Definition of done
 
+- Auth → sign-up/sign-in/Google work through Better Auth; `authClient.token()` returns a JWT; protected APIs return 401 for missing/expired/tampered tokens; refresh and reload keep the user signed in; logout clears the session and JWT.
 - Guest → details/booking redirects to sign-in and returns to the intended page.
 - Customer → booking appears pending, duplicate blocked, cancel pending works, accepted cannot be cancelled.
 - Vendor → service pending until approved, 3-service cap on Free, 4th allowed after Premium, accept/reject works, cannot touch others' data.
