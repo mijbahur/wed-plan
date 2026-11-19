@@ -122,6 +122,17 @@
     * {
         @apply border-border outline-ring/50;
     }
+    a[href],
+    button:not(:disabled),
+    [role="button"]:not([aria-disabled="true"]),
+    summary,
+    label[for],
+    [data-slot="sheet-trigger"],
+    [data-slot="sheet-close"],
+    [data-slot="dropdown-menu-trigger"],
+    [data-slot="dropdown-menu-item"] {
+        @apply cursor-pointer;
+    }
     html {
         scroll-behavior: smooth;
     }

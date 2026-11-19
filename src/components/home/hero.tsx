@@ -42,9 +42,12 @@ export default function Hero() {
                         your wedding vision to life, one perfect detail at a
                         time.
                     </p>
-                    <Button size="lg" className="mt-10">
-                        <Link href="/services">Explore Wedding Services</Link>
-                    </Button>
+                    <Button
+                        size="lg"
+                        className="mt-10"
+                        nativeButton={false}
+                        render={<Link href="/services">Explore Wedding Services</Link>}
+                    />
                 </motion.div>
 
                 <motion.div
