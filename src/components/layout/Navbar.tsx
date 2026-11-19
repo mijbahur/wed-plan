@@ -1,8 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { GemIcon, MenuIcon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+    GemIcon,
+    LayoutDashboard,
+    MenuIcon,
+    UserCog,
+    LogOut,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,16 +19,54 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
+import { authClient } from "@/lib/auth-client";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { UserAvatar } from "@/components/user-avatar";
+import { toast } from "sonner";
 
 const navigation = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
-    { label: "About Us", href: "/about" },
-    { label: "Contact", href: "/contact" },
+    // { label: "About Us", href: "/about" },
+    // { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
+    const { data: session, isPending } = authClient.useSession();
+    const router = useRouter();
     const pathname = usePathname();
+
+    const role = session?.user.role;
+    const dashboardHref =
+        role === "vendor"
+            ? "/dashboard/vendor"
+            : role === "customer"
+              ? "/dashboard/customer"
+              : "/dashboard";
+
+    async function logout() {
+        try {
+            const { error } = await authClient.signOut();
+            if (error) {
+                toast.error(error.message ?? "Could not sign you out.");
+                return;
+            }
+
+            toast.success("You have been signed out");
+            router.push("/");
+            router.refresh();
+        } catch {
+            toast.error("Could not sign you out.");
+        }
+    }
 
     return (
         <header className="sticky top-0 z-40 border-b border-border/80 bg-white/95 backdrop-blur-md">
@@ -69,19 +113,68 @@ export default function Navbar() {
                     })}
                 </div>
 
-                <div className="hidden items-center gap-3 md:flex">
-                    <Button
-                        variant="ghost"
-                        nativeButton={false}
-                        className="h-10 px-4 text-plum hover:text-plum-dark"
-                        render={<Link href="/signin">Sign In</Link>}
+                {isPending ? (
+                    <div
+                        aria-label="Loading account"
+                        className="hidden h-9 w-24 animate-pulse rounded-md bg-beige md:block"
                     />
-                    <Button
-                        nativeButton={false}
-                        className="h-10 rounded-md px-5 shadow-sm"
-                        render={<Link href="/signup">Get Started</Link>}
-                    />
-                </div>
+                ) : session ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer">
+                            <UserAvatar
+                                name={session.user.name}
+                                image={session.user.image}
+                            />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuGroup>
+                                <DropdownMenuLabel className="flex items-center gap-3">
+                                    <UserAvatar
+                                        name={session.user.name}
+                                        image={session.user.image}
+                                    />
+                                    <span className="min-w-0">
+                                        <span className="block truncate text-sm">
+                                            {session.user.name}
+                                        </span>
+                                        <span className="block truncate text-xs font-normal capitalize text-muted-foreground">
+                                            {session.user.role}
+                                        </span>
+                                    </span>
+                                </DropdownMenuLabel>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                render={<Link href={dashboardHref} />}
+                            >
+                                <LayoutDashboard /> Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                render={<Link href="/settings" />}
+                            >
+                                <UserCog /> Profile Settings
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={logout} >
+                                <LogOut /> Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <div className="hidden items-center gap-3 md:flex">
+                        <Button
+                            variant="ghost"
+                            nativeButton={false}
+                            className="h-10 px-4 text-plum hover:text-plum-dark"
+                            render={<Link href="/signin">Sign In</Link>}
+                        />
+                        <Button
+                            nativeButton={false}
+                            className="h-10 rounded-md px-5 shadow-sm"
+                            render={<Link href="/signup">Get Started</Link>}
+                        />
+                    </div>
+                )}
 
                 <Sheet>
                     <SheetTrigger
@@ -143,20 +236,43 @@ export default function Navbar() {
                                 })}
                             </div>
 
-                            <div className="mt-auto grid grid-cols-2 gap-3 border-t border-border pt-5">
-                                <SheetClose
-                                    render={<Link href="/signin" />}
-                                    className="inline-flex h-11 items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-plum"
-                                >
-                                    Sign In
-                                </SheetClose>
-                                <SheetClose
-                                    render={<Link href="/signup" />}
-                                    className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
-                                >
-                                    Get Started
-                                </SheetClose>
-                            </div>
+                            {isPending ? null : session ? (
+                                <div className="mt-auto grid gap-2 border-t border-border pt-5">
+                                    <SheetClose
+                                        render={<Link href={dashboardHref} />}
+                                        className="inline-flex h-11 items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-plum"
+                                    >
+                                        Dashboard
+                                    </SheetClose>
+                                    <SheetClose
+                                        render={<Link href="/settings" />}
+                                        className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+                                    >
+                                        Profile Settings
+                                    </SheetClose>
+                                    <SheetClose
+                                        render={<button type="button" onClick={logout} />}
+                                        className="inline-flex h-11 items-center justify-center rounded-md px-4 text-sm font-medium text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+                                    >
+                                        Logout
+                                    </SheetClose>
+                                </div>
+                            ) : (
+                                <div className="mt-auto grid grid-cols-2 gap-3 border-t border-border pt-5">
+                                    <SheetClose
+                                        render={<Link href="/signin" />}
+                                        className="inline-flex h-11 items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-plum"
+                                    >
+                                        Sign In
+                                    </SheetClose>
+                                    <SheetClose
+                                        render={<Link href="/signup" />}
+                                        className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+                                    >
+                                        Get Started
+                                    </SheetClose>
+                                </div>
+                            )}
                         </div>
                     </SheetContent>
                 </Sheet>

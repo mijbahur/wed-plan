@@ -1,3 +1,9 @@
-export default function Home() {
-    return <h1>Welcome to the Wedding Planner</h1>;
+import Hero from "@/components/home/hero";
+
+export default function HomePage() {
+  return (
+    <>
+      <Hero />
+    </>
+  );
 }
