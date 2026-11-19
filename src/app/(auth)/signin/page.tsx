@@ -1,14 +1,58 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import {
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    EyeIcon,
+    EyeOffIcon,
+    LoaderCircle,
+} from "lucide-react";
 
 import { AuthVisual } from "@/components/auth/AuthVisual";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleButton } from "@/components/auth/GoogleButton";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function SignInPage() {
+    const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const user = Object.fromEntries(formData.entries()) as {
+            email: string;
+            password: string;
+        };
+
+        console.log("formData", formData);
+        console.log("user", user);
+
+        setIsSubmitting(true);
+
+        const { error } = await authClient.signIn.email({
+            ...user,
+        });
+
+        setIsSubmitting(false);
+
+        if (error) {
+            toast.error(error.message ?? "Invalid email or password.");
+            return;
+        }
+
+        toast.success("Logged in successfully!");
+        router.push("/");
+        router.refresh();
+    };
+
     return (
         <main className="grid min-h-dvh bg-white lg:grid-cols-[44%_56%]">
             <AuthVisual image="/auth/authPicture.png" />
@@ -41,7 +85,7 @@ export default function SignInPage() {
                         <span className="h-px flex-1 bg-border" />
                     </div>
 
-                    <form className="space-y-5">
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label
                                 htmlFor="email"
@@ -55,6 +99,7 @@ export default function SignInPage() {
                                 type="email"
                                 placeholder="you@example.com"
                                 className="h-10 rounded-md text-xs"
+                                required
                             />
                         </div>
 
@@ -69,26 +114,58 @@ export default function SignInPage() {
                                 <Input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     placeholder="Enter your password"
                                     className="h-10 rounded-md pr-14 text-xs"
+                                    required
                                 />
-                                <span className="absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-muted-foreground">
-                                    Show
-                                </span>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    aria-label={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                    aria-pressed={showPassword}
+                                    className="absolute right-1 inset-y-0 my-auto cursor-pointer"
+                                    onClick={() =>
+                                        setShowPassword((visible) => !visible)
+                                    }
+                                >
+                                    {showPassword ? (
+                                        <EyeOffIcon aria-hidden="true" />
+                                    ) : (
+                                        <EyeIcon aria-hidden="true" />
+                                    )}
+                                </Button>
                             </div>
                         </div>
 
                         <Button
-                            type="button"
+                            type="submit"
                             size="lg"
                             className="h-11 w-full rounded-md text-xs"
+                            disabled={isSubmitting}
                         >
-                            Sign in
-                            <ArrowRightIcon
-                                aria-hidden="true"
-                                className="size-3"
-                            />
+                            {isSubmitting ? (
+                                <>
+                                    <LoaderCircle
+                                        className="animate-spin"
+                                        aria-hidden="true"
+                                    />
+                                    Logging in
+                                </>
+                            ) : (
+                                <>
+                                    Sign in
+                                    <ArrowRightIcon
+                                        aria-hidden="true"
+                                        className="size-3"
+                                    />
+                                </>
+                            )}
                         </Button>
                     </form>
 

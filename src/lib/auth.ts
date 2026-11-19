@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 
-const client = new MongoClient("mongodb://localhost:27017/database");
+const client = new MongoClient(process.env.MONGODB_URI as string);
 const db = client.db("wed-plan-db");
 
 export const auth = betterAuth({
@@ -11,6 +11,16 @@ export const auth = betterAuth({
     }),
 
     baseUrl: process.env.BETTER_AUTH_URL as string,
+
+    user: {
+        additionalFields: {
+            role: {
+                type: ["customer", "vendor"],
+                defaultValue: "customer",
+                input: true,
+            },
+        },
+    },
 
     emailAndPassword: {
         enabled: true,

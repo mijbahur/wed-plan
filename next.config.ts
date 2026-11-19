@@ -5,6 +5,16 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+  async rewrites() {
+    return process.env.API_URL
+      ? [
+          {
+            source: "/api/uploads/:path*",
+            destination: `${process.env.API_URL}/api/uploads/:path*`,
+          },
+        ]
+      : [];
+  },
   turbopack: {
     rules: {
       "*.css": {
