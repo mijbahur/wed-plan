@@ -12,7 +12,7 @@ export const instant = false;
 export default async function ManageServicesPage() {
     const services: VendorService[] = await getServices();
     console.log("services", services);
-    const activeCount = services.filter((service) => service.isActive).length;
+    const activeCount = services.filter((service) => service.isActive && service.status === "approved").length;
     const pendingCount = services.filter(
         (service) => service.status === "pending",
     ).length;

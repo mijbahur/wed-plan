@@ -8,3 +8,9 @@ export const createService = async (data: CreateServiceInput) => {
     const res = await protectedMutation(api, "POST", data)
     return res.json()
 }
+
+export const deleteService = async (id: string) => {
+    const api = `${BASE_URL}/api/services/${id}`;
+    const res = await protectedMutation(api, "DELETE");
+    return res.json();
+}

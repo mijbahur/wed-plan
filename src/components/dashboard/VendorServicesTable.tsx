@@ -16,13 +16,15 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import { DeleteServiceDialog } from "./DeleteServiceDialog";
+import { Button } from "../ui/button";
 
 export type VendorService = {
     _id: string;
     serviceName: string;
     location: string;
     price: string;
-    status: "approved" | "pending" | "rejected";    
+    status: "approved" | "pending" | "rejected";
     images: string[];
     isActive: boolean;
 };
@@ -34,7 +36,7 @@ type VendorServicesTableProps = {
 export default function VendorServicesTable({
     services,
 }: VendorServicesTableProps) {
-    console.log("services in table", services);
+
     return (
         <>
             <div className="mt-4 flex justify-end">
@@ -76,11 +78,11 @@ export default function VendorServicesTable({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {services.map((service, index) => (
+                        {services.map((service) => (
                             <TableRow key={service._id} className="h-24">
                                 <TableCell className="pl-4">
                                     <div className="flex items-center gap-3">
-                                        <Image 
+                                        <Image
                                             src={service.images[0]}
                                             alt=""
                                             className="size-16 rounded-lg object-cover"
@@ -140,19 +142,16 @@ export default function VendorServicesTable({
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex flex-col items-start gap-1">
-                                        <button
-                                            type="button"
-                                            className="cursor-pointer text-[10px] text-muted-foreground hover:text-plum"
+                                    <div className="flex flex-col items-start gap-2">
+                                        <Button
+                                            variant="ghost"
+                                            className="h-auto p-0 text-xs font-normal text-[#80556D] hover:bg-transparent hover:text-[#479b97]"
                                         >
                                             Edit
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="cursor-pointer text-[10px] text-destructive"
-                                        >
-                                            Delete
-                                        </button>
+                                        </Button>
+                                        <DeleteServiceDialog
+                                            service={service}
+                                        />
                                     </div>
                                 </TableCell>
                             </TableRow>
