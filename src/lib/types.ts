@@ -43,3 +43,33 @@ export interface CreateServiceInput {
   location: string;
   images: string[];
 }
+
+
+
+// Booking related types
+export type BookingStatus = "pending" | "accepted" | "rejected" | "cancelled";
+
+export interface Booking {
+  _id: string;
+  serviceId: string;
+  serviceName: string;
+  serviceImage?: string;
+  userId: string;
+  email?: string;
+  userName?: string;
+  eventDate: string;
+  eventLocation: string;
+  message?: string;
+  status: BookingStatus;
+  createdAt: string;
+}
+export type CreateBookingInput = {
+    serviceId: string;
+    serviceName: string;
+    serviceImage?: string;
+    eventDate: string;
+    eventLocation: string;
+    message?: string;
+    userId?: string;
+    email?: string;
+};

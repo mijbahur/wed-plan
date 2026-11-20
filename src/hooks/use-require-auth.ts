@@ -12,7 +12,7 @@ export function useRequireAuth() {
 
     useEffect(() => {
         if (!isPending && !session) {
-            router.replace(`/signin?redirect=${encodeURIComponent(pathname)}`);
+            router.replace(`/signin?redirectTo=${encodeURIComponent(pathname)}`);
         }
     }, [isPending, session, router, pathname]);
 
