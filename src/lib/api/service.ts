@@ -11,6 +11,17 @@ export const getServices = async (query: string = '') => {
     return res.json();
 }  
 
+export const getServiceById = async (id: string) => {
+    const res = await fetch(`${BASE_URL}/api/services/${id}`);
+    if (res.status === 404) return null;
+    if (!res.ok) {
+        throw new Error("Failed to fetch service");
+    }
+
+    const result = await res.json();
+    return result.data ?? result;
+};
+
 export const createService = async (data: CreateServiceInput) => {
     const api = `${BASE_URL}/api/services`;
     const res = await protectedMutation(api, "POST", data)
