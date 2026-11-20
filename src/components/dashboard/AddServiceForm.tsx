@@ -103,8 +103,8 @@ export default function AddServiceForm() {
                             className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-plum-soft focus:ring-3 focus:ring-plum-soft/30"
                         >
                             {CATEGORIES.map((category) => (
-                                <option key={category.name} value={category.name}>
-                                    {category.name}
+                                <option key={category} value={category}>
+                                    {category}
                                 </option>
                             ))}
                         </select>

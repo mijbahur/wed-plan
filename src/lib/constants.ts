@@ -6,12 +6,12 @@ import {
 import type { Role } from "./types";
 
 export const CATEGORIES = [
-  { name: "Photography & Videography"},
-  { name: "Wedding Venues"},
-  { name: "Decoration & Florist"},
-  { name: "Catering Services"},
-  { name: "Makeup & Styling"},
-  { name: "Wedding Fashion"},
+  "Photography & Videography",
+  "Wedding Venues",
+  "Decoration & Florist",
+  "Catering Services",
+  "Makeup & Styling",
+  "Wedding Fashion",
 ];
 
 interface MenuItem {
