@@ -3,61 +3,90 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { createService } from "@/lib/api/service";
+import { createService, getActiveServiceCount} from "@/lib/api/service";
 import { CATEGORIES } from "@/lib/constants";
 import { uploadImage } from "@/lib/upload-image";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { FREE_PLAN_LIMIT } from "@/lib/constants";
 
 export default function AddServiceForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [servicePreview, setServicePreview] = useState("");
     const router = useRouter();
-
+    const { data: session, isPending } = authClient.useSession();
+    const user = session?.user;
     useEffect(() => {
         return () => {
             if (servicePreview) URL.revokeObjectURL(servicePreview);
         };
     }, [servicePreview]);
 
+    
     async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         setIsSubmitting(true);
+        
+        if (!user) {
+            toast.error("You must be signed in to submit a service.");
+            router.push("/signin");
+            return;
+        } else if (user.role === "vendor") {
+            try {
+                const formData = new FormData(event.currentTarget);
+                const serviceImage = formData.get("serviceImage");
+                const activeServiceCount = await getActiveServiceCount(user.id);
+                if (activeServiceCount >= FREE_PLAN_LIMIT) {
+                    toast.error(
+                        "You have reached the maximum number of active services.",
+                    );
+                    router.push("/dashboard/vendor/subscription");
+                    setIsSubmitting(false);
+                    return;
+                }
 
-        try {
-            const formData = new FormData(event.currentTarget);
-            const serviceImage = formData.get("serviceImage");
+                if (
+                    !(serviceImage instanceof File) ||
+                    serviceImage.size === 0
+                ) {
+                    toast.error("Choose one service image.");
+                    return;
+                }
 
-            if (!(serviceImage instanceof File) || serviceImage.size === 0) {
-                toast.error("Choose one service image.");
-                return;
+                const imageUrl = await uploadImage(serviceImage);
+
+                const service = {
+                    serviceName: String(formData.get("serviceName") ?? ""),
+                    category: String(formData.get("category") ?? ""),
+                    price: Number(formData.get("startingPrice") ?? 0),
+                    location: String(formData.get("location") ?? ""),
+                    description: String(formData.get("description") ?? ""),
+                    images: [imageUrl],
+                    vendorId: session?.user.id ?? "", //temporary until the JWT middleware sets the vendor from the token
+                };
+
+                await createService(service);
+                toast.success("Service submitted for review.");
+                router.refresh();
+            } catch (error) {
+                toast.error(
+                    error instanceof Error
+                        ? error.message
+                        : "Could not create the service.",
+                );
+            } finally {
+                setIsSubmitting(false);
+                setServicePreview("");
             }
-
-            const imageUrl = await uploadImage(serviceImage);
-
-            const service = {
-                serviceName: String(formData.get("serviceName") ?? ""),
-                category: String(formData.get("category") ?? ""),
-                price: Number(formData.get("startingPrice") ?? 0),
-                location: String(formData.get("location") ?? ""),
-                description: String(formData.get("description") ?? ""),
-                images: [imageUrl],
-            };
-
-            console.log("New service:", service);
-            const result = await createService(service);
-            console.log("Create service response:", result);
-            toast.success("Service submitted for review.");
-            router.refresh();
-        } catch (error) {
-            toast.error(
-                error instanceof Error
-                    ? error.message
-                    : "Could not create the service.",
-            );
-        } finally {
-            setIsSubmitting(false);
-            setServicePreview("");
         }
+    }
+
+    if (isPending) {
+        return (
+            <div className="rounded-xl border border-border bg-card p-6 text-xs text-muted-foreground shadow-sm">
+                Checking your account...
+            </div>
+        );
     }
 
     return (
@@ -115,7 +144,8 @@ export default function AddServiceForm() {
                             htmlFor="starting-price"
                             className="block text-xs font-medium text-ink"
                         >
-                            Starting price ($) <span className="text-destructive">*</span>
+                            Starting price ($){" "}
+                            <span className="text-destructive">*</span>
                         </label>
                         <input
                             id="starting-price"
@@ -165,7 +195,8 @@ export default function AddServiceForm() {
 
                 <div className="space-y-2">
                     <label className="block text-xs font-medium text-ink">
-                        Service images <span className="text-destructive">*</span>
+                        Service images{" "}
+                        <span className="text-destructive">*</span>
                     </label>
                     <label
                         htmlFor="service-images"
@@ -180,7 +211,9 @@ export default function AddServiceForm() {
                             />
                         ) : (
                             <>
-                                <span className="mb-2 text-lg text-plum">↑</span>
+                                <span className="mb-2 text-lg text-plum">
+                                    ↑
+                                </span>
                                 <span className="font-medium text-ink">
                                     Choose images or drag them here
                                 </span>

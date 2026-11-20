@@ -12,11 +12,18 @@ export const getServices = async (query: string = '') => {
 }  
 
 export const getServiceCount = async ( query: string = '' ) => {
-    const res = await fetch(`${BASE_URL}/api/services/count`);
+    const res = await fetch(`${BASE_URL}/api/services/count?${query}`);
     if (!res.ok) {
         throw new Error("Failed to fetch service count");
     }
     return res.json();
+};
+
+export const getActiveServiceCount = async (vendorId: string) => {
+    const result = await getServiceCount(
+        `vendorId=${vendorId}&isActive=true`,
+    );
+    return result.data.count;
 };
 
 export const getServiceById = async (id: string) => {

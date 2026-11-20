@@ -1,7 +1,11 @@
 export const instant = false;
 import AddServiceForm from "@/components/dashboard/AddServiceForm";
+import { FREE_PLAN_LIMIT } from "@/lib/constants";
+import { getCurrentVendorActiveServiceCount } from "@/lib/server/vendor";
 
-const NewServicePage = () => {
+const NewServicePage = async () => {
+    const activeServiceCount = await getCurrentVendorActiveServiceCount();
+
     return (
         <div className="mx-auto max-w-7xl">
             <header>
@@ -41,7 +45,7 @@ const NewServicePage = () => {
                             Made for your next chapter.
                         </p>
                         <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-                            Free plan · 2 / 3 active services
+                            Free plan · {activeServiceCount} / {FREE_PLAN_LIMIT} active services
                         </p>
                         <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
                             Need more room? Go Premium for unlimited active services.
