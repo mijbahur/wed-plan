@@ -11,6 +11,14 @@ export const getServices = async (query: string = '') => {
     return res.json();
 }  
 
+export const getServiceCount = async ( query: string = '' ) => {
+    const res = await fetch(`${BASE_URL}/api/services/count`);
+    if (!res.ok) {
+        throw new Error("Failed to fetch service count");
+    }
+    return res.json();
+};
+
 export const getServiceById = async (id: string) => {
     const res = await fetch(`${BASE_URL}/api/services/${id}`);
     if (res.status === 404) return null;

@@ -14,6 +14,8 @@ export const CATEGORIES = [
   "Wedding Fashion",
 ];
 
+export const FREE_PLAN_LIMIT = 3;
+export const PREMIUM_PRICE = 29;
 interface MenuItem {
     label: string;
     href: string;
