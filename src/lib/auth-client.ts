@@ -3,7 +3,8 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 import type { auth } from "@/lib/auth";
 
 export const authClient = createAuthClient({
+    baseURL: process.env.BETTER_AUTH_URL,
     plugins: [inferAdditionalFields<typeof auth>()],
 });
 
-export const { signIn, signUp, signOut, useSession } = createAuthClient();
+export const { signIn, signUp, signOut, useSession } = authClient;
