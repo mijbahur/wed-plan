@@ -54,7 +54,7 @@ Rules:
 - Browser traffic goes through Next `rewrites` for same-origin cookies and no CORS. The Stripe webhook is the only endpoint hit directly on the server URL.
 - Better Auth owns the entire auth flow (email/password, Google, sessions, users). Its **JWT plugin** issues the token used by the Express business APIs; the session cookie only keeps the browser logged in and is exchanged for a fresh JWT via `authClient.token()`.
 - Business APIs require `Authorization: Bearer <jwt>`, verified in Express against Better Auth's JWKS with `jose` (issuer/audience = Better Auth base URL). Never trust a decoded-but-unverified token.
-- Never trust `userId`, `role`, `vendorId`, prices, or payment status sent by the browser. Derive identity from the verified token and re-load the user from MongoDB.
+- Never trust `customerId`, `role`, `vendorId`, prices, or payment status sent by the browser. Derive identity from the verified token and re-load the user from MongoDB.
 
 ### Server repo layout (existing)
 

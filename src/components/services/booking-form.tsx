@@ -28,7 +28,7 @@ export default function BookingForm({ service }: { service: Service }) {
                 eventDate: String(form.get("eventDate")),
                 eventLocation: String(form.get("eventLocation")),
                 message: String(form.get("message") || ""),
-                userId: session?.user.id,
+                customerId: session?.user.id,
                 email: session?.user.email,
             } as CreateBookingInput);
             console.log("booking", booking);
