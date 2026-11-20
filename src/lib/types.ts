@@ -18,12 +18,22 @@ export interface Service {
   description: string;
   price: number;
   location: string;
-  images: string;
+  images: string[];
   status: ServiceStatus;
   isActive: boolean;
   createdAt: string;
   vendor?: Vendor;
 }
+
+export type VendorService = {
+    _id: string;
+    serviceName: string;
+    location: string;
+    price: string;
+    status: ServiceStatus;
+    images: string[];
+    isActive: boolean;
+};
 
 export interface CreateServiceInput {
   serviceName: string;

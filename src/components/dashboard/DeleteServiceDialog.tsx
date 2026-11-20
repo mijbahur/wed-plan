@@ -14,11 +14,11 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { VendorService } from "./VendorServicesTable";
-import { deleteService } from "@/lib/action/service";
+import { deleteService } from "@/lib/api/service";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { VendorService } from "@/lib/types";
 
 export function DeleteServiceDialog({ service }: { service: VendorService }) {
     const [open, setOpen] = useState(false);

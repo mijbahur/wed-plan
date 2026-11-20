@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { createService } from "@/lib/action/service";
+import { createService } from "@/lib/api/service";
 import { CATEGORIES } from "@/lib/constants";
 import { uploadImage } from "@/lib/upload-image";
 import { useRouter } from "next/navigation";

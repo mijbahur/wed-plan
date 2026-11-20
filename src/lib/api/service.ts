@@ -3,6 +3,14 @@ import { CreateServiceInput } from "../types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
+export const getServices = async (query: string = '') => {
+    const res = await fetch(`${BASE_URL}/api/services?${query}`);
+    if (!res.ok) {
+        throw new Error("Failed to fetch services");
+    }
+    return res.json();
+}  
+
 export const createService = async (data: CreateServiceInput) => {
     const api = `${BASE_URL}/api/services`;
     const res = await protectedMutation(api, "POST", data)

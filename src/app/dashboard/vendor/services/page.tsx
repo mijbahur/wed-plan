@@ -2,10 +2,9 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import VendorServicesSummary from "@/components/dashboard/VendorServicesSummary";
-import VendorServicesTable, {
-    type VendorService,
-} from "@/components/dashboard/VendorServicesTable";
-import { getServices } from "@/lib/api";
+import VendorServicesTable from "@/components/dashboard/VendorServicesTable";
+import { getServices } from "@/lib/api/service";
+import { VendorService } from "@/lib/types";
 
 export const instant = false;
 

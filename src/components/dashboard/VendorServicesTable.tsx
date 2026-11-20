@@ -18,16 +18,7 @@ import {
 import Image from "next/image";
 import { DeleteServiceDialog } from "./DeleteServiceDialog";
 import { Button } from "../ui/button";
-
-export type VendorService = {
-    _id: string;
-    serviceName: string;
-    location: string;
-    price: string;
-    status: "approved" | "pending" | "rejected";
-    images: string[];
-    isActive: boolean;
-};
+import { VendorService } from "@/lib/types";
 
 type VendorServicesTableProps = {
     services: VendorService[];
