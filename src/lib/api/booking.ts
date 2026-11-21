@@ -25,13 +25,6 @@ export const getMyBookings = async (customerId: string): Promise<Booking[]> => {
     return result.data ?? result;
 };
 
-export const cancelBooking = async (id: string) => {
-    return protectedMutation(
-        `${BASE_URL}/api/bookings/${id}/cancel`,
-        "PATCH",
-    );
-};
-
 export const getVendorBookings = async (vendorId: string): Promise<Booking[]> => {
     if (!vendorId) return [];
 
@@ -44,14 +37,4 @@ export const getVendorBookings = async (vendorId: string): Promise<Booking[]> =>
     }
     const result = await res.json();
     return result.data ?? result;
-};
-
-export const respondToBooking = async (
-    id: string,
-    status: "accepted" | "rejected",
-) => {
-    return protectedMutation(
-        `${BASE_URL}/api/bookings/${id}/${status === "accepted" ? "accept" : "reject"}`,
-        "PATCH",
-    );
 };

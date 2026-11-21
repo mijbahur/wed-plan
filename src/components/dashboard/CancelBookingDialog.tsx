@@ -1,7 +1,6 @@
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { cancelBooking } from "@/lib/api/booking";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Booking } from "@/lib/types";
 import { CalendarDays } from "lucide-react";
+import { cancelBooking } from "@/lib/action/booking";
 
 export default function CancelBookingDialog({
     booking,

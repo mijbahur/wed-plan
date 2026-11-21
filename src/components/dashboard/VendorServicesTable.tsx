@@ -1,12 +1,7 @@
+"use client";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import {
     Table,
     TableBody,
@@ -19,6 +14,8 @@ import Image from "next/image";
 import { DeleteServiceDialog } from "./DeleteServiceDialog";
 import { Button } from "../ui/button";
 import { VendorService } from "@/lib/types";
+import { updateService } from "@/lib/action/service";
+import { toast } from "sonner";
 
 type VendorServicesTableProps = {
     services: VendorService[];
@@ -27,26 +24,10 @@ type VendorServicesTableProps = {
 export default function VendorServicesTable({
     services,
 }: VendorServicesTableProps) {
-
+    const router = useRouter();
+    const isTrue = (value: boolean | string) => value === true || value === "true";
     return (
         <>
-            <div className="mt-4 flex justify-end">
-                <Select defaultValue="all">
-                    <SelectTrigger
-                        className="h-9 min-w-36"
-                        aria-label="Filter services"
-                    >
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All categories</SelectItem>
-                        <SelectItem value="venues">Wedding Venues</SelectItem>
-                        <SelectItem value="photo">Photography</SelectItem>
-                        <SelectItem value="catering">Catering</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
             <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
                 <Table>
                     <TableHeader className="bg-muted/40">
@@ -79,10 +60,13 @@ export default function VendorServicesTable({
                                             className="size-16 rounded-lg object-cover"
                                             width={64}
                                             height={64}
-                                        />
+                                            />
                                         <div>
                                             <p className="text-xs font-medium text-ink">
                                                 {service.serviceName}
+                                            </p>
+                                            <p className="mt-1 text-[9px] text-muted-foreground">
+                                                {service.category}
                                             </p>
                                             <p className="mt-1 text-[9px] text-muted-foreground">
                                                 {service.location}
@@ -116,12 +100,30 @@ export default function VendorServicesTable({
                                         <div className="flex items-center gap-2 cursor-pointer">
                                             <Switch
                                                 defaultChecked={
-                                                    service.isActive
+                                                    isTrue(service.isActive)
                                                 }
+                                                onCheckedChange={async (checked) => {
+                                                    try {
+                                                        console.log("Updating service availability:", service._id, checked, service);
+                                                        const response = await updateService(service._id, { status: checked ? "true" : "false" });
+                                                        if (!response.success) {
+                                                            throw new Error(response.message || "Failed to update service availability");
+                                                        }
+                                                        if (response.success && checked) {
+                                                            toast.success("Service is now active and visible to customers.");
+                                                        }
+                                                        if (response.success && !checked) {
+                                                            toast.error("Service is now inactive and hidden from customers.");
+                                                        }
+                                                        console.log("Service availability updated:", response);
+                                                    } catch (error) {
+                                                        console.error("Error updating service:", error);
+                                                    }
+                                                }}
                                                 aria-label={`Availability for ${service.serviceName}`}
                                             />
                                             <span className="text-[9px] text-muted-foreground">
-                                                {service.isActive
+                                                {isTrue(service.isActive)
                                                     ? "Active"
                                                     : "Inactive"}
                                             </span>
@@ -137,6 +139,11 @@ export default function VendorServicesTable({
                                         <Button
                                             variant="ghost"
                                             className="h-auto p-0 text-xs font-normal text-[#80556D] hover:bg-transparent hover:text-[#479b97]"
+                                            onClick={() => {
+                                                router.push(
+                                                    `/dashboard/vendor/services/${service._id}/edit`,
+                                                );
+                                            }}
                                         >
                                             Edit
                                         </Button>

@@ -28,6 +28,7 @@ export interface Service {
 export type VendorService = {
     _id: string;
     serviceName: string;
+    category: string;
     location: string;
     price: string;
     status: ServiceStatus;

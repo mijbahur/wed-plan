@@ -14,10 +14,6 @@ export default async function ManageServicesPage() {
     const user = session?.user;
 
     const services: VendorService[] = await getServices(`vendorId=${user?.id}`);
-    const activeCount = services.filter((service) => service.isActive && service.status === "approved").length;
-    const pendingCount = services.filter(
-        (service) => service.status === "pending",
-    ).length;
 
     return (
         <div className="mx-auto max-w-7xl">
@@ -42,9 +38,7 @@ export default async function ManageServicesPage() {
             </header>
 
             <VendorServicesSummary
-                total={services.length}
-                active={activeCount}
-                pending={pendingCount}
+                services={services}
             />
 
             <VendorServicesTable

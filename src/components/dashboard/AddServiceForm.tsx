@@ -10,10 +10,14 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { FREE_PLAN_LIMIT } from "@/lib/constants";
 import { getUserPremiumById } from "@/lib/api/user";
+import type { Service } from "@/lib/types";
+import { updateServiceDetails } from "@/lib/action/service";
 
-export default function AddServiceForm() {
+export default function AddServiceForm({ service }: { service?: Service }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [servicePreview, setServicePreview] = useState("");
+    const [servicePreview, setServicePreview] = useState(
+        service?.images?.[0] ?? "",
+    );
     const router = useRouter();
     const { data: session, isPending } = useSession();
     const user = session?.user;
@@ -36,41 +40,48 @@ export default function AddServiceForm() {
             try {
                 const formData = new FormData(event.currentTarget);
                 const serviceImage = formData.get("serviceImage");
-                const activeServiceCount = await getActiveServiceCount(user.id);
-                const { isPremium } = await getUserPremiumById(user.id);
-                if (activeServiceCount >= FREE_PLAN_LIMIT && !isPremium) {
-                // if (activeServiceCount >= FREE_PLAN_LIMIT) {
-                    toast.error(
-                        "You have reached the maximum number of active services.",
-                    );
-                    router.push("/dashboard/vendor/subscription");
-                    setIsSubmitting(false);
-                    return;
+                if (!service) {
+                    const activeServiceCount = await getActiveServiceCount(user.id);
+                    const { isPremium } = await getUserPremiumById(user.id);
+                    if (activeServiceCount >= FREE_PLAN_LIMIT && !isPremium) {
+                        toast.error(
+                            "You have reached the maximum number of active services.",
+                        );
+                        router.push("/dashboard/vendor/subscription");
+                        setIsSubmitting(false);
+                        return;
+                    }
                 }
 
-                if (
-                    !(serviceImage instanceof File) ||
-                    serviceImage.size === 0
-                ) {
+                let imageUrl = service?.images?.[0] ?? "";
+                if (serviceImage instanceof File && serviceImage.size > 0) {
+                    imageUrl = await uploadImage(serviceImage);
+                }
+                if (!imageUrl) {
                     toast.error("Choose one service image.");
                     return;
                 }
 
-                const imageUrl = await uploadImage(serviceImage);
-
-                const service = {
+                const serviceDetails = {
                     serviceName: String(formData.get("serviceName") ?? ""),
                     category: String(formData.get("category") ?? ""),
                     price: Number(formData.get("startingPrice") ?? 0),
                     location: String(formData.get("location") ?? ""),
                     description: String(formData.get("description") ?? ""),
                     images: [imageUrl],
-                    vendorId: session?.user.id ?? "", //temporary until the JWT middleware sets the vendor from the token
                 };
 
-                console.log("Submitting service:", service);
-                await createService(service);
-                toast.success("Service submitted for review.");
+                if (service) {
+                    await updateServiceDetails(service._id, serviceDetails);
+                    toast.success("Service updated and submitted for review.");
+                } else {
+                    await createService({
+                        ...serviceDetails,
+                        vendorId: session?.user.id ?? "",
+                    });
+                    toast.success("Service submitted for review.");
+                }
+                router.push("/dashboard/vendor/services");
                 router.refresh();
             } catch (error) {
                 toast.error(
@@ -114,6 +125,7 @@ export default function AddServiceForm() {
                         id="service-name"
                         name="serviceName"
                         type="text"
+                        defaultValue={service?.serviceName ?? ""}
                         placeholder="e.g. Charleston Wedding Venue"
                         required
                         className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-plum-soft focus:ring-3 focus:ring-plum-soft/30"
@@ -131,7 +143,7 @@ export default function AddServiceForm() {
                         <select
                             id="category"
                             name="category"
-                            defaultValue=""
+                            defaultValue={service?.category ?? ""}
                             required
                             className="h-10 w-full cursor-pointer rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-plum-soft focus:ring-3 focus:ring-plum-soft/30"
                         >
@@ -156,6 +168,7 @@ export default function AddServiceForm() {
                             name="startingPrice"
                             type="number"
                             min="0"
+                            defaultValue={service?.price ?? ""}
                             placeholder="0"
                             required
                             className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-plum-soft focus:ring-3 focus:ring-plum-soft/30"
@@ -174,6 +187,7 @@ export default function AddServiceForm() {
                         id="location"
                         name="location"
                         type="text"
+                        defaultValue={service?.location ?? ""}
                         placeholder="e.g.  Dakha, Bangladesh"
                         required
                         className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-plum-soft focus:ring-3 focus:ring-plum-soft/30"
@@ -192,6 +206,7 @@ export default function AddServiceForm() {
                         name="description"
                         rows={5}
                         required
+                        defaultValue={service?.description ?? ""}
                         placeholder="Tell couples what makes your service special. Include your package details, what's included, and what to expect."
                         className="w-full resize-none rounded-md border border-border bg-white px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-plum-soft focus:ring-3 focus:ring-plum-soft/30"
                     />
@@ -232,7 +247,7 @@ export default function AddServiceForm() {
                         name="serviceImage"
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
-                        required
+                        required={!service}
                         className="sr-only"
                         onChange={(event) => {
                             const file = event.target.files?.[0] ?? null;
@@ -249,6 +264,14 @@ export default function AddServiceForm() {
                 <button
                     type="reset"
                     className="h-10 cursor-pointer rounded-md border border-border bg-white text-xs font-medium text-ink"
+                    onClick={() => {
+                        if (service) {
+                            setServicePreview(service.images?.[0] ?? "");
+                        } else {
+                            setServicePreview("");
+                        }
+                        router.push("/dashboard/vendor/services");
+                    }}
                 >
                     Cancel
                 </button>
@@ -257,7 +280,13 @@ export default function AddServiceForm() {
                     disabled={isSubmitting}
                     className="h-10 cursor-pointer rounded-md bg-primary text-xs font-medium text-primary-foreground"
                 >
-                    {isSubmitting ? "Uploading..." : "Submit for review →"}
+                    {isSubmitting
+                        ? service
+                            ? "Saving..."
+                            : "Uploading..."
+                        : service
+                          ? "Save changes"
+                          : "Submit for review →"}
                 </button>
             </div>
         </form>

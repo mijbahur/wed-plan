@@ -10,10 +10,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { EmptyState, ErrorState, LoadingBlock } from "@/components/states";
-import { getVendorBookings, respondToBooking } from "@/lib/api/booking";
 import type { Booking, BookingStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { respondToBooking } from "@/lib/action/booking";
+import { getVendorBookings } from "@/lib/api/booking";
 
 type Tab = "all" | BookingStatus;
 type SortOption = "newest" | "oldest" | "event-soonest";
