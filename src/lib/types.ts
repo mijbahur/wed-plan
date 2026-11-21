@@ -71,6 +71,17 @@ export interface CreateServiceInput {
 // Booking related types
 export type BookingStatus = "pending" | "accepted" | "rejected" | "cancelled";
 
+export type Transaction = {
+  _id: string;
+  sessionId?: string;
+  status?: string;
+  payment_status?: string;
+  customer_email?: string;
+  userId?: string;
+  payment_date?: string | Date;
+  payment_intent?: string;
+};
+
 export interface Booking {
   _id: string;
   serviceId: string;

@@ -18,3 +18,13 @@ export const updateServiceDetails = async (
 ) => {
     return protectedMutation(`${BASE_URL}/api/services/${id}`, "PATCH", data);
 };
+
+export const respondToServiceRequest = async (
+    id: string,
+    status: "approved" | "rejected",
+) => {
+    return protectedMutation(
+        `${BASE_URL}/api/services/${id}/${status === "approved" ? "accept" : "reject"}`,
+        "PATCH",
+    );
+};

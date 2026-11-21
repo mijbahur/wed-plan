@@ -53,6 +53,7 @@ export const dashboardMenus: Record<Role, MenuItem[]> = {
     admin: [
         { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
         { label: "Manage Users", href: "/dashboard/admin/users", icon: Users },
+        { label: "Manage Bookings", href: "/dashboard/admin/bookings", icon: Inbox },
         { label: "Manage Services", href: "/dashboard/admin/services", icon: ClipboardCheck },
         { label: "Transactions", href: "/dashboard/admin/transactions", icon: Receipt },
         { label: "Profile Settings", href: "/dashboard/profile", icon: UserCog },
