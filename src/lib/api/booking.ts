@@ -31,3 +31,27 @@ export const cancelBooking = async (id: string) => {
         "PATCH",
     );
 };
+
+export const getVendorBookings = async (vendorId: string): Promise<Booking[]> => {
+    if (!vendorId) return [];
+
+    const res = await fetch(
+        `${BASE_URL}/api/bookings?vendorId=${encodeURIComponent(vendorId)}`,
+        { cache: "no-store" },
+    );
+    if (!res.ok) {
+        throw new Error("Failed to load booking requests");
+    }
+    const result = await res.json();
+    return result.data ?? result;
+};
+
+export const respondToBooking = async (
+    id: string,
+    status: "accepted" | "rejected",
+) => {
+    return protectedMutation(
+        `${BASE_URL}/api/bookings/${id}/${status === "accepted" ? "accept" : "reject"}`,
+        "PATCH",
+    );
+};

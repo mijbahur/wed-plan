@@ -25,6 +25,7 @@ export default async function ServicesPage({
         ? result
         : result?.data ?? [];
 
+        console.log("services", services);
     return (
         <div className="bg-cream">
             <section className="bg-beige">

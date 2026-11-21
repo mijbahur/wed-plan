@@ -24,6 +24,7 @@ export default function BookingForm({ service }: { service: Service }) {
             const booking = await createBooking({
                 serviceId: service._id,
                 serviceName: service.serviceName,
+                customerName: session?.user.name || "",
                 serviceImage: service.images?.[0],
                 eventDate: String(form.get("eventDate")),
                 eventLocation: String(form.get("eventLocation")),

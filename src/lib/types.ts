@@ -56,7 +56,9 @@ export interface Booking {
   serviceId: string;
   serviceName: string;
   serviceImage?: string;
+  vendorId?: string;
   customerId: string;
+  customerName: string;
   email?: string;
   userName?: string;
   eventDate: string;
@@ -74,4 +76,6 @@ export type CreateBookingInput = {
     message?: string;
     customerId?: string;
     email?: string;
+    customerName: string;
+    vendorId: string;
 };
