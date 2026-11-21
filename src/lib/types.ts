@@ -1,5 +1,24 @@
 export type Role = "admin" | "vendor" | "customer";
 
+export type AdminUser = {
+    id: string;
+    name: string;
+    email: string;
+    role: Role;
+    isBlocked?: boolean;
+    createdAt?: string | Date;
+};
+
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: Role;
+    isPremium?: boolean;
+    isBlocked?: boolean;
+    createdAt?: string | Date;
+};
+
 export type ServiceStatus = "pending" | "approved" | "rejected";
 
 export interface Vendor {
