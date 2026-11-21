@@ -1,6 +1,6 @@
 import SubscriptionPlanCard from "@/components/dashboard/subscription-plan-card";
 import SubscriptionPlanSummary from "@/components/dashboard/subscription-plan-summary";
-import { FREE_PLAN_LIMIT, PREMIUM_PRICE } from "@/lib/constants";
+import { FREE_PLAN_FEATURES, PREMIUM_PLAN_FEATURES, PREMIUM_PRICE } from "@/lib/constants";
 
 export const instant = false;
 
@@ -22,11 +22,7 @@ export default function VendorSubscriptionPage() {
                     name="Free"
                     price="$0"
                     description="A thoughtful place to begin."
-                    features={[
-                        `Up to ${FREE_PLAN_LIMIT} active services`,
-                        "Basic vendor dashboard",
-                        "Booking request management",
-                    ]}
+                    features={FREE_PLAN_FEATURES}
                     current
                 />
                 <SubscriptionPlanCard
@@ -34,11 +30,7 @@ export default function VendorSubscriptionPage() {
                     name="Premium"
                     price={`$${PREMIUM_PRICE}`}
                     description="More room for every possibility."
-                    features={[
-                        "Unlimited active services",
-                        "Premium vendor badge",
-                        "All Free plan features",
-                    ]}
+                    features={PREMIUM_PLAN_FEATURES}
                     featured
                 />
             </div>

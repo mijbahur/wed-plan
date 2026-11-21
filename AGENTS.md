@@ -237,7 +237,7 @@ Envelope:
 | `/dashboard/customer`, `/bookings`, `/settings` | customer |
 | `/dashboard/vendor`, `/services`, `/services/new`, `/services/[id]/edit`, `/bookings`, `/subscription`, `/settings` | vendor |
 | `/dashboard/admin`, `/users`, `/users/[id]`, `/services`, `/transactions` | admin |
-| `/payment/success`, `/payment/cancel` | vendor |
+| `/checkout/success`, `/checkout/cancel` | vendor |
 | `/onboarding` | authenticated (Google role) |
 | `loading.tsx`, `error.tsx`, `not-found.tsx` | — |
 

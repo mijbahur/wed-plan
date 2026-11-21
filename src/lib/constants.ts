@@ -6,16 +6,28 @@ import {
 import type { Role } from "./types";
 
 export const CATEGORIES = [
-  "Photography & Videography",
-  "Wedding Venues",
-  "Decoration & Florist",
-  "Catering Services",
-  "Makeup & Styling",
-  "Wedding Fashion",
+    "Photography & Videography",
+    "Wedding Venues",
+    "Decoration & Florist",
+    "Catering Services",
+    "Makeup & Styling",
+    "Wedding Fashion",
 ];
 
 export const FREE_PLAN_LIMIT = 3;
 export const PREMIUM_PRICE = 29;
+
+export const FREE_PLAN_FEATURES = [
+    `Up to ${FREE_PLAN_LIMIT} active services`,
+    "Basic vendor dashboard",
+    "Booking request management",
+];
+export const PREMIUM_PLAN_FEATURES = [
+    "Unlimited active services",
+    "Priority support",
+    "Access to premium features",
+];
+
 interface MenuItem {
     label: string;
     href: string;

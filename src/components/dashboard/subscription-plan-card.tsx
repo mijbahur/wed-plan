@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type SubscriptionPlanCardProps = {
@@ -37,13 +38,18 @@ export default function SubscriptionPlanCard({
                     </li>
                 ))}
             </ul>
-            <Button
-                type="button"
-                variant={featured ? "secondary" : "outline"}
-                className="mt-7 w-full"
-            >
-                {current ? "Your current plan" : "Upgrade to Premium ↗"}
-            </Button>
+            {current ? (
+                <Button type="button" variant="outline" className="mt-7 w-full">
+                    Your current plan
+                </Button>
+            ) : (
+                <Button
+                    variant="secondary"
+                    className="mt-7 w-full"
+                    nativeButton={false}
+                    render={<Link href="/checkout">Upgrade to Premium ↗</Link>}
+                />
+            )}
         </article>
     );
 }
