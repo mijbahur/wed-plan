@@ -39,12 +39,10 @@ export const getServiceById = async (id: string) => {
 
 export const createService = async (data: CreateServiceInput) => {
     const api = `${BASE_URL}/api/services`;
-    const res = await protectedMutation(api, "POST", data)
-    return res.json()
+    return protectedMutation(api, "POST", data);
 }
 
 export const deleteService = async (id: string) => {
     const api = `${BASE_URL}/api/services/${id}`;
-    const res = await protectedMutation(api, "DELETE");
-    return res.json();
+    return protectedMutation(api, "DELETE");
 }

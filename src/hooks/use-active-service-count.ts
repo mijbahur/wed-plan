@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { getServiceCount } from "@/lib/api/service";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
 
 export function useActiveServiceCount() {
-    const { data: session, isPending: isSessionPending } = authClient.useSession();
+    const { data: session, isPending: isSessionPending } = useSession();
     const [count, setCount] = useState(0);
     const [error, setError] = useState<Error | null>(null);
     const userId = session?.user.id;

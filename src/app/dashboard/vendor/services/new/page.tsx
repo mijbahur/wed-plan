@@ -1,10 +1,16 @@
 export const instant = false;
 import AddServiceForm from "@/components/dashboard/AddServiceForm";
+import { getUserPremiumById } from "@/lib/api/user";
 import { FREE_PLAN_LIMIT } from "@/lib/constants";
+import { getSession } from "@/lib/core/server";
+import Link from 'next/link'
 import { getCurrentVendorActiveServiceCount } from "@/lib/server/vendor";
 
 const NewServicePage = async () => {
     const activeServiceCount = await getCurrentVendorActiveServiceCount();
+    const session = await getSession();
+    const user = session?.user;
+    const { isPremium } = await getUserPremiumById(user?.id as string);
 
     return (
         <div className="mx-auto max-w-7xl">
@@ -13,7 +19,8 @@ const NewServicePage = async () => {
                     Create something wonderful.
                 </h1>
                 <p className="mt-2 text-xs text-muted-foreground">
-                    Add the details. We&apos;ll review your service before it goes live.
+                    Add the details. We&apos;ll review your service before it
+                    goes live.
                 </p>
             </header>
 
@@ -25,7 +32,8 @@ const NewServicePage = async () => {
                         A lovely first impression.
                     </h2>
                     <p className="mt-4 text-xs leading-5 text-muted-foreground">
-                        Your service will be marked Pending until reviewed by the WedPlan team.
+                        Your service will be marked Pending until reviewed by
+                        the WedPlan team.
                     </p>
 
                     <div className="mt-6 border-t border-border pt-5">
@@ -40,20 +48,29 @@ const NewServicePage = async () => {
                         </ul>
                     </div>
 
-                    <div className="mt-8 border-t border-border pt-6">
-                        <p className="font-heading text-lg text-ink">
-                            Made for your next chapter.
-                        </p>
-                        <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-                            Free plan · {activeServiceCount} / {FREE_PLAN_LIMIT} active services
-                        </p>
-                        <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
-                            Need more room? Go Premium for unlimited active services.
-                        </p>
-                        <button type="button" className="mt-4 cursor-pointer text-[11px] font-medium text-plum">
-                            Explore Premium →
-                        </button>
-                    </div>
+                    {!isPremium && (
+                        <div className="mt-8 border-t border-border pt-6">
+                            <p className="font-heading text-lg text-ink">
+                                Made for your next chapter.
+                            </p>
+                            <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
+                                Free plan · {activeServiceCount} /{" "}
+                                {FREE_PLAN_LIMIT} active services
+                            </p>
+                            <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                                Need more room? Go Premium for unlimited active
+                                services.
+                            </p>
+                            <Link
+                                href="/dashboard/vendor/subscription"
+                                className="mt-4 block cursor-pointer text-[11px] font-medium text-plum"
+                                // type="button"
+                                // className="mt-4 cursor-pointer text-[11px] font-medium text-plum"
+                            >
+                                Explore Premium →
+                            </Link>
+                        </div>
+                    )}
                 </aside>
             </div>
         </div>

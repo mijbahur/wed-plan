@@ -5,12 +5,15 @@ import VendorServicesSummary from "@/components/dashboard/VendorServicesSummary"
 import VendorServicesTable from "@/components/dashboard/VendorServicesTable";
 import { getServices } from "@/lib/api/service";
 import { VendorService } from "@/lib/types";
+import { getSession } from "@/lib/core/server";
 
 export const instant = false;
 
 export default async function ManageServicesPage() {
-    const services: VendorService[] = await getServices();
-    console.log("services", services);
+    const session = await getSession();
+    const user = session?.user;
+
+    const services: VendorService[] = await getServices(`vendorId=${user?.id}`);
     const activeCount = services.filter((service) => service.isActive && service.status === "approved").length;
     const pendingCount = services.filter(
         (service) => service.status === "pending",

@@ -1,19 +1,40 @@
-
 import { FREE_PLAN_LIMIT } from "@/lib/constants";
 import { getCurrentVendorActiveServiceCount } from "@/lib/server/vendor";
 
-export default async function SubscriptionPlanSummary() {
+export default async function SubscriptionPlanSummary({
+    isPremium,
+}: {
+    isPremium: boolean;
+}) {
     const activeServiceCount = await getCurrentVendorActiveServiceCount();
 
     return (
         <div>
-            <section className="mt-5 rounded-lg bg-beige p-5 sm:p-6">
-                <h2 className="text-xl">Your current plan</h2>
-                <p className="mt-3 text-sm text-muted-foreground">
-                    Free · {activeServiceCount} of {FREE_PLAN_LIMIT}{" "}
-                    active services used · No payment method on file
-                </p>
-            </section>
+            {isPremium ? (
+                <section className="mt-5 rounded-lg bg-beige p-5 sm:p-6">
+                    <h2 className="text-xl">Your current plan</h2>
+
+                    <p className="mt-3 text-sm text-muted-foreground">
+                        <span className="font-medium text-ink">Premium</span>
+                        {" · "}
+                        {activeServiceCount} active services
+                        {" · "}
+                        Unlimited service listings
+                    </p>
+
+                    <p className="mt-2 text-xs text-muted-foreground">
+                        No payment method on adding services.
+                    </p>
+                </section>
+            ) : (
+                <section className="mt-5 rounded-lg bg-beige p-5 sm:p-6">
+                    <h2 className="text-xl">Your current plan</h2>
+                    <p className="mt-3 text-sm text-muted-foreground">
+                        Free · {activeServiceCount} of {FREE_PLAN_LIMIT} active
+                        services used · No payment method on file
+                    </p>
+                </section>
+            )}
 
             <section className="mt-8">
                 <h2 className="text-2xl">A few things to know</h2>

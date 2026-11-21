@@ -3,12 +3,11 @@ import { protectedMutation } from "../core/server";
 import { Booking, CreateBookingInput } from "../types";
 
 export const createBooking = async (data: CreateBookingInput) => {
-    const res = await protectedMutation(
+    return protectedMutation(
         `${BASE_URL}/api/bookings`,
         "POST",
         data,
     );
-    return res.json();
 };
 
 // Bookings belonging to the signed in customer
@@ -27,9 +26,8 @@ export const getMyBookings = async (customerId: string): Promise<Booking[]> => {
 };
 
 export const cancelBooking = async (id: string) => {
-    const res = await protectedMutation(
+    return protectedMutation(
         `${BASE_URL}/api/bookings/${id}/cancel`,
         "PATCH",
     );
-    return res.json();
 };

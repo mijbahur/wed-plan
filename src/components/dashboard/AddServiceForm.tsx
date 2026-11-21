@@ -7,14 +7,15 @@ import { createService, getActiveServiceCount} from "@/lib/api/service";
 import { CATEGORIES } from "@/lib/constants";
 import { uploadImage } from "@/lib/upload-image";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
 import { FREE_PLAN_LIMIT } from "@/lib/constants";
+import { getUserPremiumById } from "@/lib/api/user";
 
 export default function AddServiceForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [servicePreview, setServicePreview] = useState("");
     const router = useRouter();
-    const { data: session, isPending } = authClient.useSession();
+    const { data: session, isPending } = useSession();
     const user = session?.user;
     useEffect(() => {
         return () => {
@@ -36,7 +37,9 @@ export default function AddServiceForm() {
                 const formData = new FormData(event.currentTarget);
                 const serviceImage = formData.get("serviceImage");
                 const activeServiceCount = await getActiveServiceCount(user.id);
-                if (activeServiceCount >= FREE_PLAN_LIMIT) {
+                const { isPremium } = await getUserPremiumById(user.id);
+                if (activeServiceCount >= FREE_PLAN_LIMIT && !isPremium) {
+                // if (activeServiceCount >= FREE_PLAN_LIMIT) {
                     toast.error(
                         "You have reached the maximum number of active services.",
                     );
@@ -65,6 +68,7 @@ export default function AddServiceForm() {
                     vendorId: session?.user.id ?? "", //temporary until the JWT middleware sets the vendor from the token
                 };
 
+                console.log("Submitting service:", service);
                 await createService(service);
                 toast.success("Service submitted for review.");
                 router.refresh();

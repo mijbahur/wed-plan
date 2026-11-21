@@ -19,7 +19,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { authClient } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -40,7 +40,7 @@ const navigation = [
 ];
 
 export default function Navbar() {
-    const { data: session, isPending } = authClient.useSession();
+    const { data: session, isPending } = useSession();
     const router = useRouter();
     const pathname = usePathname();
 
@@ -54,7 +54,7 @@ export default function Navbar() {
 
     async function logout() {
         try {
-            const { error } = await authClient.signOut();
+            const { error } = await signOut();
             if (error) {
                 toast.error(error.message ?? "Could not sign you out.");
                 return;
