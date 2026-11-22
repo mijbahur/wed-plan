@@ -30,3 +30,11 @@ export const protectedMutation = async (api: string, method: string, data?: unkn
 
     return result;
 }
+
+export const requireRole = async (role: string) => {
+    const session = await getSession();
+    if (!session || session?.user.role !== role) {
+        redirect("/unauthorized");
+    }
+    return session;
+}

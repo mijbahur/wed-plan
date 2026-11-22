@@ -32,7 +32,7 @@ import {
 import { UserAvatar } from "@/components/user-avatar";
 import { toast } from "sonner";
 
-const navigation = [
+const publicNavigation = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
     // { label: "About Us", href: "/about" },
@@ -50,7 +50,15 @@ export default function Navbar() {
             ? "/dashboard/vendor"
             : role === "customer"
               ? "/dashboard/customer"
-              : "/dashboard";
+              : "/dashboard/admin";
+
+    const navigation = session
+        ? [
+              { label: "Home", href: "/" },
+              { label: "Services", href: "/services" },
+              { label: "Dashboard", href: dashboardHref },
+          ]
+        : publicNavigation;
 
     async function logout() {
         try {
@@ -155,7 +163,7 @@ export default function Navbar() {
                                 <UserCog /> Profile Settings
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={logout} >
+                            <DropdownMenuItem onClick={logout}>
                                 <LogOut /> Logout
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -224,6 +232,7 @@ export default function Navbar() {
                                         <SheetClose
                                             key={item.href}
                                             render={<Link href={item.href} />}
+                                            nativeButton={false}
                                             className={`rounded-md px-3 py-3 text-base font-medium  ${
                                                 isActive
                                                     ? "bg-plum-tint text-plum"
@@ -240,18 +249,21 @@ export default function Navbar() {
                                 <div className="mt-auto grid gap-2 border-t border-border pt-5">
                                     <SheetClose
                                         render={<Link href={dashboardHref} />}
+                                        nativeButton={false}
                                         className="inline-flex h-11 items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-plum"
                                     >
                                         Dashboard
                                     </SheetClose>
                                     <SheetClose
                                         render={<Link href="/settings" />}
+                                        nativeButton={false}
                                         className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
                                     >
                                         Profile Settings
                                     </SheetClose>
                                     <SheetClose
-                                        render={<button type="button" onClick={logout} />}
+                                        type="button"
+                                        onClick={logout}
                                         className="inline-flex h-11 items-center justify-center rounded-md px-4 text-sm font-medium text-destructive cursor-pointer hover:bg-destructive/10 hover:text-destructive"
                                     >
                                         Logout
@@ -261,12 +273,14 @@ export default function Navbar() {
                                 <div className="mt-auto grid grid-cols-2 gap-3 border-t border-border pt-5">
                                     <SheetClose
                                         render={<Link href="/signin" />}
+                                        nativeButton={false}
                                         className="inline-flex h-11 items-center justify-center rounded-md border border-border px-4 text-sm font-medium text-plum"
                                     >
                                         Sign In
                                     </SheetClose>
                                     <SheetClose
                                         render={<Link href="/signup" />}
+                                        nativeButton={false}
                                         className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
                                     >
                                         Get Started

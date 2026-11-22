@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Globe, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { dashboardMenus } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/types";
@@ -11,13 +11,9 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 // The sidebar content (used on desktop and inside the mobile drawer)
-export function SidebarContent({
-    role,
-    onNavigate,
-}: {
-    role: Role;
-    onNavigate?: () => void;
-}) {
+export function SidebarContent() {
+    const { data: session } = useSession();
+    const role = session?.user.role as Role;
     const pathname = usePathname();
     const router = useRouter();
     const [isSigningOut, setIsSigningOut] = useState(false);
@@ -59,7 +55,6 @@ export function SidebarContent({
                         <Link
                             key={item.href}
                             href={item.href}
-                            onClick={onNavigate}
                             aria-current={active ? "page" : undefined}
                             className={cn(
                                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition",
