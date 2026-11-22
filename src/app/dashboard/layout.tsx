@@ -22,9 +22,9 @@ export default function DashboardLayout({
     const { session, isPending } = useRequireAuth();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const role = session?.user.role as Role | undefined;
+    const userRole = session?.user.userRole as Role | undefined;
 
-    if (isPending || !session || !role) {
+    if (isPending || !session || !userRole) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80">
                 <LoadingBlock text="Loading..." />
@@ -64,7 +64,7 @@ export default function DashboardLayout({
                             </SheetContent>
                         </Sheet>
                         <span className="text-sm capitalize text-muted-foreground">
-                            {role} workspace
+                            {userRole} workspace
                         </span>
                     </div>
                     <div className="flex items-center gap-3">

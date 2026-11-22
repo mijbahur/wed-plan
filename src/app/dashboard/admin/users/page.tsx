@@ -14,14 +14,15 @@ const AdminDashboardPage = async () => {
     const users = (
         (Array.isArray(normalizedResult)
             ? normalizedResult
-            : normalizedResult.users) ??
-        []
+            : normalizedResult.users) ?? []
     ).map((user) => ({
         ...user,
         id: String(user.id),
         name: user.name ?? "",
         email: user.email ?? "",
-        role: user.role ?? "customer",
+        userRole: user.userRole ?? "customer",
+        isBlocked: Boolean(user.isBlocked),
+        createdAt: user.createdAt ? new Date(user.createdAt).toISOString() : "",
     }));
 
     return (
@@ -35,10 +36,7 @@ const AdminDashboardPage = async () => {
                 </p>
             </header>
 
-            <ManageUsersTable
-                users={users}
-                currentUserId={session?.user.id}
-            />
+            <ManageUsersTable users={users} currentUserId={session?.user.id} />
         </div>
     );
 };

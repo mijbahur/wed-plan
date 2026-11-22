@@ -4,8 +4,8 @@ export type AdminUser = {
     id: string;
     name: string;
     email: string;
-    role: Role;
-    isBlocked?: boolean;
+    userRole: Role;
+    isBlocked: boolean;
     createdAt?: string | Date;
 };
 
@@ -13,35 +13,35 @@ export type User = {
     id: string;
     name: string;
     email: string;
-    role: Role;
+    userRole: Role;
     isPremium?: boolean;
-    isBlocked?: boolean;
+    isBlocked: boolean;
     createdAt?: string | Date;
 };
 
 export type ServiceStatus = "pending" | "approved" | "rejected";
 
 export interface Vendor {
-  id: string;
-  name: string;
-  businessName: string;
-  image: string;
-  isPremium: boolean;
+    id: string;
+    name: string;
+    businessName: string;
+    image: string;
+    isPremium: boolean;
 }
 
 export interface Service {
-  _id: string;
-  vendorId: string;
-  serviceName: string;
-  category: string;
-  description: string;
-  price: number;
-  location: string;
-  images: string[];
-  status: ServiceStatus;
-  isActive: boolean;
-  createdAt: string;
-  vendor?: Vendor;
+    _id: string;
+    vendorId: string;
+    serviceName: string;
+    category: string;
+    description: string;
+    price: number;
+    location: string;
+    images: string[];
+    status: ServiceStatus;
+    isActive: boolean;
+    createdAt: string;
+    vendor?: Vendor;
 }
 
 export type VendorService = {
@@ -56,47 +56,45 @@ export type VendorService = {
 };
 
 export interface CreateServiceInput {
-  serviceName: string;
-  category: string;
-  description: string;
-  price: number;
-  location: string;
-  images: string[];
-  // Temporary until the JWT middleware sets the vendor from the token
-  vendorId?: string;
+    serviceName: string;
+    category: string;
+    description: string;
+    price: number;
+    location: string;
+    images: string[];
+    // Temporary until the JWT middleware sets the vendor from the token
+    vendorId?: string;
 }
-
-
 
 // Booking related types
 export type BookingStatus = "pending" | "accepted" | "rejected" | "cancelled";
 
 export type Transaction = {
-  _id: string;
-  sessionId?: string;
-  status?: string;
-  payment_status?: string;
-  customer_email?: string;
-  userId?: string;
-  payment_date?: string | Date;
-  payment_intent?: string;
+    _id: string;
+    sessionId?: string;
+    status?: string;
+    payment_status?: string;
+    customer_email?: string;
+    userId?: string;
+    payment_date?: string | Date;
+    payment_intent?: string;
 };
 
 export interface Booking {
-  _id: string;
-  serviceId: string;
-  serviceName: string;
-  serviceImage?: string;
-  vendorId?: string;
-  customerId: string;
-  customerName: string;
-  email?: string;
-  userName?: string;
-  eventDate: string;
-  eventLocation: string;
-  message?: string;
-  status: BookingStatus;
-  createdAt: string;
+    _id: string;
+    serviceId: string;
+    serviceName: string;
+    serviceImage?: string;
+    vendorId?: string;
+    customerId: string;
+    customerName: string;
+    email?: string;
+    userName?: string;
+    eventDate: string;
+    eventLocation: string;
+    message?: string;
+    status: BookingStatus;
+    createdAt: string;
 }
 export type CreateBookingInput = {
     serviceId: string;

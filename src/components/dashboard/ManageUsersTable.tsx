@@ -24,7 +24,7 @@ type RoleFilter = "all" | Role;
 type ManageUsersTableProps = {
     users: AdminUser[];
     currentUserId?: string;
-    onRoleChange?: (user: AdminUser, role: Role) => void | Promise<void>;
+    onRoleChange?: (user: AdminUser, userRole: Role) => void | Promise<void>;
     onStatusChange?: (
         user: AdminUser,
         isBlocked: boolean,
@@ -42,24 +42,24 @@ export default function ManageUsersTable({
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
     const [displayUsers, setDisplayUsers] = useState(users);
 
-    const handleRoleChange = async (user: AdminUser, role: Role) => {
+    const handleRoleChange = async (user: AdminUser, userRole: Role) => {
         try {
             if (onRoleChange) {
-                await onRoleChange(user, role);
+                await onRoleChange(user, userRole);
             } else {
-                await updateUserRole(user.id, role);
+                await updateUserRole(user.id, userRole);
             }
             setDisplayUsers((current) =>
                 current.map((item) =>
-                    item.id === user.id ? { ...item, role } : item,
+                    item.id === user.id ? { ...item, userRole } : item,
                 ),
             );
-            toast.success(`${user.name}'s role changed to ${role}.`);
+            toast.success(`${user.name}'s userRole changed to ${userRole}.`);
         } catch (error) {
             toast.error(
                 error instanceof Error
                     ? error.message
-                    : "Could not change the user role.",
+                    : "Could not change the user userRole.",
             );
         }
     };
@@ -98,7 +98,7 @@ export default function ManageUsersTable({
                 user.name.toLowerCase().includes(normalizedSearch) ||
                 user.email.toLowerCase().includes(normalizedSearch);
             const matchesRole =
-                roleFilter === "all" || user.role === roleFilter;
+                roleFilter === "all" || user.userRole === roleFilter;
             const matchesStatus =
                 statusFilter === "all" ||
                 (statusFilter === "blocked"
@@ -112,8 +112,8 @@ export default function ManageUsersTable({
 
     const filters: FilterControl[] = [
         {
-            key: "role",
-            label: "Filter by role",
+            key: "userRole",
+            label: "Filter by userRole",
             value: roleFilter,
             onChange: (value) => {
                 setRoleFilter(value as RoleFilter);
@@ -204,21 +204,14 @@ export default function ManageUsersTable({
 
             <div className="mt-5 flex items-center justify-between gap-4">
                 <p className="text-xs text-muted-foreground">
-                    Showing {filteredUsers.length} of {displayUsers.length} users
+                    Showing {filteredUsers.length} of {displayUsers.length}{" "}
+                    users
                 </p>
                 <div className="flex gap-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        disabled
-                    >
+                    <Button type="button" variant="outline" disabled>
                         Previous
                     </Button>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        disabled
-                    >
+                    <Button type="button" variant="outline" disabled>
                         Next
                     </Button>
                 </div>

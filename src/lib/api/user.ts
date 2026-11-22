@@ -9,7 +9,7 @@ export const getUser = async () => {
             // searchField: "name", // The field to search in, defaults to email. Can be `email` or `name`.
             sortBy: "name", // The field to sort by.
             sortDirection: "desc", // The direction to sort by.
-            filterField: "role", // The field to filter by.
+            filterField: "userRole", // The field to filter by.
             // filterValue: "", // The value to filter by.
             // filterOperator: "eq", // The operator to use for the filter.
         },

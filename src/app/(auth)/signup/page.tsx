@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftIcon, ArrowRightIcon, EyeIcon, EyeOffIcon, LoaderCircle, UploadIcon } from "lucide-react";
+import {
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    EyeIcon,
+    EyeOffIcon,
+    LoaderCircle,
+    UploadIcon,
+} from "lucide-react";
 
 import { AuthVisual } from "@/components/auth/AuthVisual";
 import { Button } from "@/components/ui/button";
@@ -52,8 +59,6 @@ export default function SignUpPage() {
 
         let image = "";
 
-        console.log("Signing up user:", user, "before image:", image);
-        console.log("Profile photo:", profilePhoto);
         if (profilePhoto) {
             try {
                 image = await uploadImage(profilePhoto);
@@ -68,11 +73,10 @@ export default function SignUpPage() {
             }
         }
 
-        console.log("Signing up user:", user, "with image:", image, "and role:", role);
         const { error } = await authClient.signUp.email({
             ...user,
             image,
-            role,
+            userRole: role,
         });
 
         setIsSubmitting(false);
@@ -92,7 +96,6 @@ export default function SignUpPage() {
             router.push("/signin");
         }, 3000);
     };
-    console.log("role", role);
 
     return (
         <main className="grid min-h-dvh bg-white lg:grid-cols-[44%_56%]">
@@ -123,7 +126,9 @@ export default function SignUpPage() {
                             <Button
                                 type="button"
                                 size="lg"
-                                variant={role === "customer" ? "default" : "outline"}
+                                variant={
+                                    role === "customer" ? "default" : "outline"
+                                }
                                 aria-pressed={role === "customer"}
                                 className="h-10 rounded-md px-2 text-[10px]"
                                 onClick={() => setRole("customer")}
@@ -133,7 +138,9 @@ export default function SignUpPage() {
                             </Button>
                             <Button
                                 type="button"
-                                variant={role === "vendor" ? "default" : "outline"}
+                                variant={
+                                    role === "vendor" ? "default" : "outline"
+                                }
                                 size="lg"
                                 aria-pressed={role === "vendor"}
                                 className="h-10 rounded-md border-border px-2 text-[10px]"
@@ -144,10 +151,7 @@ export default function SignUpPage() {
                         </div>
                     </fieldset>
 
-                    <form
-                        className="mt-5 space-y-4"
-                        onSubmit={handleSubmit}
-                    >
+                    <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
                         <div className="space-y-2">
                             <label
                                 htmlFor="full-name"
@@ -177,7 +181,7 @@ export default function SignUpPage() {
                             >
                                 Email address
                             </label>
-                            <Input                                
+                            <Input
                                 id="email"
                                 name="email"
                                 type="email"
@@ -211,7 +215,7 @@ export default function SignUpPage() {
                                     onChange={(event) =>
                                         update("password", event.target.value)
                                     }
-                                    minLength={6} 
+                                    minLength={6}
                                     pattern="(?=.*[A-Z])(?=.*[a-z]).{6,}"
                                     title="Use at least 6 characters, including an uppercase and a lowercase letter."
                                     required
@@ -220,11 +224,17 @@ export default function SignUpPage() {
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                    aria-label={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
                                     aria-pressed={showPassword}
                                     // className="absolute top-1/2 right-1 -translate-y-1/2 cursor-pointer"
                                     className="absolute right-1 inset-y-0 my-auto cursor-pointer"
-                                    onClick={() => setShowPassword((visible) => !visible)}
+                                    onClick={() =>
+                                        setShowPassword((visible) => !visible)
+                                    }
                                 >
                                     {showPassword ? (
                                         <EyeOffIcon aria-hidden="true" />
@@ -241,7 +251,10 @@ export default function SignUpPage() {
 
                         <div className="flex items-center gap-3">
                             {profilePreview && (
-                                <Avatar size="lg" className="size-12 rounded-md">
+                                <Avatar
+                                    size="lg"
+                                    className="size-12 rounded-md"
+                                >
                                     <AvatarImage
                                         src={profilePreview}
                                         alt="Selected profile photo preview"
@@ -254,8 +267,13 @@ export default function SignUpPage() {
                                 htmlFor="profile-photo"
                                 className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-border text-[9px] font-medium text-ink"
                             >
-                                <UploadIcon aria-hidden="true" className="size-3" />
-                                {profilePhoto ? profilePhoto.name : "Upload profile photo"}
+                                <UploadIcon
+                                    aria-hidden="true"
+                                    className="size-3"
+                                />
+                                {profilePhoto
+                                    ? profilePhoto.name
+                                    : "Upload profile photo"}
                             </label>
                         </div>
                         <Input
@@ -269,7 +287,9 @@ export default function SignUpPage() {
                                 setProfilePhoto(file);
                                 setProfilePreview((current) => {
                                     if (current) URL.revokeObjectURL(current);
-                                    return file ? URL.createObjectURL(file) : "";
+                                    return file
+                                        ? URL.createObjectURL(file)
+                                        : "";
                                 });
                             }}
                         />
@@ -292,7 +312,6 @@ export default function SignUpPage() {
                             className="h-11 w-full rounded-md text-xs"
                             disabled={isSubmitting}
                         >
-
                             {isSubmitting ? (
                                 <>
                                     <LoaderCircle
@@ -310,7 +329,6 @@ export default function SignUpPage() {
                                     />
                                 </>
                             )}
-                            
                         </Button>
                     </form>
 

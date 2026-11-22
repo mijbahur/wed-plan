@@ -13,7 +13,7 @@ export default function DashboardPage() {
     useEffect(() => {
         if (isPending || !session) return;
 
-        const role = session.user.role;
+        const role = session.user.userRole;
         if (role === "vendor") {
             router.replace("/dashboard/vendor");
         } else if (role === "customer") {

@@ -20,7 +20,7 @@ export default function ServiceInfoCard({ service }: ServiceDetailsCardProps) {
             router.push(`/signin?redirectTo=/services/${service._id}/book`);
             return;
         }
-        if (user.role === "customer") {
+        if (user.userRole === "customer") {
             router.push(`/services/${service._id}/book`);
             return;
         }
@@ -46,20 +46,19 @@ export default function ServiceInfoCard({ service }: ServiceDetailsCardProps) {
                     ${service.price.toLocaleString()}
                 </p>
 
-                {user?.role === "customer" ? (
-                    <Button
-                        className="mt-6 w-full"
-                        onClick={handelRequest}
-                    >
+                {user?.userRole === "customer" ? (
+                    <Button className="mt-6 w-full" onClick={handelRequest}>
                         Request booking
                     </Button>
-                ) : (    <Button
-        className="mt-6 w-full cursor-not-allowed"
-        variant="outline"
-    >
-        <ShieldCheck className="mr-2 size-4" />
-        only customers can request bookings
-    </Button>)}
+                ) : (
+                    <Button
+                        className="mt-6 w-full cursor-not-allowed"
+                        variant="outline"
+                    >
+                        <ShieldCheck className="mr-2 size-4" />
+                        only customers can request bookings
+                    </Button>
+                )}
 
                 <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <ShieldCheck className="size-4 text-success" />

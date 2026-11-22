@@ -44,11 +44,11 @@ export default function Navbar() {
     const router = useRouter();
     const pathname = usePathname();
 
-    const role = session?.user.role;
+    const userRole = session?.user.userRole;
     const dashboardHref =
-        role === "vendor"
+        userRole === "vendor"
             ? "/dashboard/vendor"
-            : role === "customer"
+            : userRole === "customer"
               ? "/dashboard/customer"
               : "/dashboard/admin";
 
@@ -146,7 +146,7 @@ export default function Navbar() {
                                             {session.user.name}
                                         </span>
                                         <span className="block truncate text-xs font-normal capitalize text-muted-foreground">
-                                            {session.user.role}
+                                            {session.user.userRole}
                                         </span>
                                     </span>
                                 </DropdownMenuLabel>

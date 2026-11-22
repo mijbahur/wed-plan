@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
-import { admin } from "better-auth/plugins"
+import { admin } from "better-auth/plugins";
 
 const client = new MongoClient(process.env.MONGODB_URI as string);
 const db = client.db("wed-plan-db");
@@ -12,25 +12,28 @@ export const auth = betterAuth({
     }),
 
     baseUrl: process.env.BETTER_AUTH_URL as string,
-    
+
     emailAndPassword: {
         enabled: true,
     },
 
     user: {
         additionalFields: {
-            role: {
+            userRole: {
                 type: ["admin", "customer", "vendor"],
                 defaultValue: "customer",
                 input: true,
             },
+            isBlocked: {
+                type: "boolean",
+                defaultValue: false,
+                required: false,
+                input: false,
+            },
         },
     },
 
-    plugins: [
-        admin() 
-    ],
-
+    plugins: [admin()],
 
     socialProviders: {
         google: {

@@ -19,7 +19,7 @@ const UserTableRow = ({
 }: {
     user: User;
     currentUserId?: string;
-    onRoleChange?: (user: User, role: Role) => void;
+    onRoleChange?: (user: User, userRole: Role) => void;
     onStatusChange?: (user: User, isBlocked: boolean) => void;
 }) => {
     function formatDate(value?: string | Date) {
@@ -45,7 +45,7 @@ const UserTableRow = ({
             </TableCell>
             <TableCell>
                 <Select
-                    value={user.role}
+                    value={user.userRole}
                     disabled={isCurrentUser}
                     onValueChange={(value) =>
                         onRoleChange?.(user, value as Role)
@@ -53,7 +53,7 @@ const UserTableRow = ({
                 >
                     <SelectTrigger
                         className="h-8 w-28"
-                        aria-label={`Change role for ${user.name}`}
+                        aria-label={`Change userRole for ${user.name}`}
                     >
                         <SelectValue />
                     </SelectTrigger>

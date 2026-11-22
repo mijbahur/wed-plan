@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { createService, getActiveServiceCount} from "@/lib/api/service";
+import { createService, getActiveServiceCount } from "@/lib/api/service";
 import { CATEGORIES } from "@/lib/constants";
 import { uploadImage } from "@/lib/upload-image";
 import { useRouter } from "next/navigation";
@@ -27,21 +27,22 @@ export default function AddServiceForm({ service }: { service?: Service }) {
         };
     }, [servicePreview]);
 
-    
     async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         setIsSubmitting(true);
-        
+
         if (!user) {
             toast.error("You must be signed in to submit a service.");
             router.push("/signin");
             return;
-        } else if (user.role === "vendor") {
+        } else if (user.userRole === "vendor") {
             try {
                 const formData = new FormData(event.currentTarget);
                 const serviceImage = formData.get("serviceImage");
                 if (!service) {
-                    const activeServiceCount = await getActiveServiceCount(user.id);
+                    const activeServiceCount = await getActiveServiceCount(
+                        user.id,
+                    );
                     const { isPremium } = await getUserPremiumById(user.id);
                     if (activeServiceCount >= FREE_PLAN_LIMIT && !isPremium) {
                         toast.error(

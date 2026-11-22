@@ -1,22 +1,26 @@
 "use server";
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const getSession = async () => {
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
+        headers: await headers(),
+    });
     return session;
-}
+};
 
-export const protectedMutation = async (api: string, method: string, data?: unknown) => {
+export const protectedMutation = async (
+    api: string,
+    method: string,
+    data?: unknown,
+) => {
     const res = await fetch(api, {
         method: method,
         headers: {
-            'content-type': 'application/json',
+            "content-type": "application/json",
         },
-        body: data ? JSON.stringify(data) : null
+        body: data ? JSON.stringify(data) : null,
     });
 
     if (res.status === 401 || res.status === 403) {
@@ -29,12 +33,12 @@ export const protectedMutation = async (api: string, method: string, data?: unkn
     }
 
     return result;
-}
+};
 
-export const requireRole = async (role: string) => {
+export const requireRole = async (userRole: string) => {
     const session = await getSession();
-    if (!session || session?.user.role !== role) {
+    if (!session || session?.user.userRole !== userRole) {
         redirect("/unauthorized");
     }
     return session;
-}
+};

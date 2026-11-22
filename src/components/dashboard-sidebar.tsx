@@ -13,7 +13,7 @@ import { useState } from "react";
 // The sidebar content (used on desktop and inside the mobile drawer)
 export function SidebarContent() {
     const { data: session } = useSession();
-    const role = session?.user.role as Role;
+    const role = session?.user.userRole as Role;
     const pathname = usePathname();
     const router = useRouter();
     const [isSigningOut, setIsSigningOut] = useState(false);
