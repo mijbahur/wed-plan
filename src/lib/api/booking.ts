@@ -1,9 +1,9 @@
 import { BASE_URL } from "../config/api";
-import { protectedMutation } from "../core/server";
+import { authFetch, getToken, protectedMutation } from "../core/server";
 import { Booking, CreateBookingInput } from "../types";
 
 export const getAllBookings = async (): Promise<Booking[]> => {
-    const res = await fetch(`${BASE_URL}/api/bookings`, { cache: "no-store" });
+    const res = await authFetch(`${BASE_URL}/api/bookings`, { cache: "no-store" });
     if (!res.ok) {
         throw new Error("Failed to load all bookings");
     }
@@ -23,7 +23,11 @@ export const createBooking = async (data: CreateBookingInput) => {
 export const getMyBookings = async (customerId: string): Promise<Booking[]> => {
     const res = await fetch(
         `${BASE_URL}/api/bookings?customerId=${encodeURIComponent(customerId)}`,
-        { cache: "no-store" },
+                { cache: "no-store",
+            headers: {
+                "authorization": `Bearer ${await getToken()}`,
+            },
+        },
     );
 
     if (!res.ok) {
@@ -39,7 +43,11 @@ export const getVendorBookings = async (vendorId: string): Promise<Booking[]> =>
 
     const res = await fetch(
         `${BASE_URL}/api/bookings?vendorId=${encodeURIComponent(vendorId)}`,
-        { cache: "no-store" },
+        { cache: "no-store",
+            headers: {
+                "authorization": `Bearer ${await getToken()}`,
+            },
+        },
     );
     if (!res.ok) {
         throw new Error("Failed to load booking requests");

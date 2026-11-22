@@ -58,33 +58,59 @@ export default function VendorBookingRequestsView({
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
 
-    useEffect(() => {
-        let active = true;
+    // useEffect(() => {
+    //     let active = true;
 
-        getVendorBookings(vendorId)
-            .then((data) => {
-                if (!active) return;
-                setBookings(data);
-                setError(null);
-                setSelectedId((current) =>
-                    current && data.some((item) => item._id === current)
-                        ? current
-                        : data[0]?._id ?? null,
-                );
-            })
-            .catch((e) => {
-                if (!active) return;
+    //     getVendorBookings(vendorId)
+    //         .then((data) => {
+    //             if (!active) return;
+    //             setBookings(data);
+    //             setError(null);
+    //             setSelectedId((current) =>
+    //                 current && data.some((item) => item._id === current)
+    //                     ? current
+    //                     : (data[0]?._id ?? null),
+    //             );
+    //         })
+    //         .catch((e) => {
+    //             if (!active) return;
+    //             setError(
+    //                 e instanceof Error ? e.message : "Failed to load requests",
+    //             );
+    //         })
+    //         .finally(() => {
+    //             if (active) setLoading(false);
+    //         });
+
+    //     return () => {
+    //         active = false;
+    //     };
+    // }, [vendorId, reloadKey]);
+useEffect(() => {
+    let active = true;
+
+    (async () => {
+        try {
+            const data = await getVendorBookings(vendorId);
+            if (!active) return;
+            setBookings(data);
+            setError(null);
+            setSelectedId((cur) =>
+                data.some((b) => b._id === cur) ? cur : (data[0]?._id ?? null),
+            );
+        } catch (e) {
+            if (active) {
                 setError(e instanceof Error ? e.message : "Failed to load requests");
-            })
-            .finally(() => {
-                if (active) setLoading(false);
-            });
+            }
+        } finally {
+            if (active) setLoading(false);
+        }
+    })();
 
-        return () => {
-            active = false;
-        };
-    }, [vendorId, reloadKey]);
-
+    return () => {
+        active = false;
+    };
+}, [vendorId, reloadKey]);
     const counts = useMemo(() => {
         const result: Record<Tab, number> = {
             all: bookings.length,
@@ -101,16 +127,27 @@ export default function VendorBookingRequestsView({
 
     const visible = useMemo(() => {
         const filtered =
-            tab === "all" ? bookings : bookings.filter((item) => item.status === tab);
+            tab === "all"
+                ? bookings
+                : bookings.filter((item) => item.status === tab);
 
         return [...filtered].sort((a, b) => {
             if (sort === "oldest") {
-                return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+                return (
+                    new Date(a.createdAt).getTime() -
+                    new Date(b.createdAt).getTime()
+                );
             }
             if (sort === "event-soonest") {
-                return new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime();
+                return (
+                    new Date(a.eventDate).getTime() -
+                    new Date(b.eventDate).getTime()
+                );
             }
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            return (
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            );
         });
     }, [bookings, sort, tab]);
 
@@ -118,20 +155,20 @@ export default function VendorBookingRequestsView({
         visible.find((booking) => booking._id === selectedId) ?? visible[0];
 
     const updateStatus = async (
-        booking: Booking,
+        { _id }: Booking,
         status: "accepted" | "rejected",
     ) => {
-        setUpdatingId(booking._id);
+        setUpdatingId(_id);
         try {
-            await respondToBooking(booking._id, status);
-            setBookings((current) =>
-                current.map((item) =>
-                    item._id === booking._id ? { ...item, status } : item,
-                ),
+            await respondToBooking(_id, status);
+            setBookings((prev) =>
+                prev.map((b) => (b._id === _id ? { ...b, status } : b)),
             );
             toast.success(`Request ${status}`);
         } catch (e) {
-            toast.error(e instanceof Error ? e.message : `Could not ${status} request`);
+            toast.error(
+                e instanceof Error ? e.message : `Could not ${status} request`,
+            );
         } finally {
             setUpdatingId(null);
         }
@@ -153,7 +190,9 @@ export default function VendorBookingRequestsView({
     return (
         <div className="mx-auto max-w-7xl">
             <header>
-                <h1 className="font-heading text-4xl font-medium">Booking requests</h1>
+                <h1 className="font-heading text-4xl font-medium">
+                    Booking requests
+                </h1>
                 <p className="mt-2 text-sm text-muted-foreground">
                     Turn new connections into unforgettable celebrations.
                 </p>
@@ -176,7 +215,10 @@ export default function VendorBookingRequestsView({
                                         : "text-muted-foreground hover:text-foreground",
                                 )}
                             >
-                                {item.label} <span className="ml-1">{counts[item.value]}</span>
+                                {item.label}{" "}
+                                <span className="ml-1">
+                                    {counts[item.value]}
+                                </span>
                                 {active && (
                                     <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
                                 )}
@@ -185,7 +227,10 @@ export default function VendorBookingRequestsView({
                     })}
                 </div>
 
-                <Select value={sort} onValueChange={(value) => setSort(value as SortOption)}>
+                <Select
+                    value={sort}
+                    onValueChange={(value) => setSort(value as SortOption)}
+                >
                     <SelectTrigger className="mb-2 h-9 min-w-40" aria-label="Sort requests">
                         <SelectValue />
                     </SelectTrigger>
@@ -225,19 +270,32 @@ export default function VendorBookingRequestsView({
                                         {booking.customerName || "Customer"}
                                     </p>
                                     <p className="mt-3 text-sm font-medium">
-                                        {booking.userName || booking.email || "Customer"}
+                                        {booking.userName ||
+                                            booking.email ||
+                                            "Customer"}
                                     </p>
                                     <p className="mt-1 text-xs text-muted-foreground">
                                         {booking.serviceName}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground uppercase">Event date</p>
-                                    <p className="mt-3 text-sm">{formatDate(booking.eventDate)}</p>
+                                    <p className="text-xs text-muted-foreground uppercase">
+                                        Event date
+                                    </p>
+                                    <p className="mt-3 text-sm">
+                                        {formatDate(booking.eventDate)}
+                                    </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground uppercase">Status</p>
-                                    <p className={cn("mt-3 inline-flex rounded-full px-3 py-1 text-xs capitalize", statusClass[booking.status])}>
+                                    <p className="text-xs text-muted-foreground uppercase">
+                                        Status
+                                    </p>
+                                    <p
+                                        className={cn(
+                                            "mt-3 inline-flex rounded-full px-3 py-1 text-xs capitalize",
+                                            statusClass[booking.status],
+                                        )}
+                                    >
                                         {booking.status}
                                     </p>
                                 </div>
@@ -250,29 +308,49 @@ export default function VendorBookingRequestsView({
                             <p className="text-xs text-muted-foreground uppercase">
                                 Request #{selected._id.slice(-6)}
                             </p>
-                            <h2 className="mt-3 font-heading text-2xl">A new connection</h2>
+                            <h2 className="mt-3 font-heading text-2xl">
+                                A new connection
+                            </h2>
 
                             <dl className="mt-7 space-y-5 text-sm">
                                 <div>
-                                    <dt className="text-xs text-muted-foreground uppercase">Customer</dt>
+                                    <dt className="text-xs text-muted-foreground uppercase">
+                                        Customer
+                                    </dt>
                                     <dd className="mt-2 font-medium">
-                                        {selected.userName || selected.email || "Customer"}
+                                        {selected.userName ||
+                                            selected.email ||
+                                            "Customer"}
                                     </dd>
                                     {selected.email && (
-                                        <dd className="mt-1 text-xs text-muted-foreground">{selected.email}</dd>
+                                        <dd className="mt-1 text-xs text-muted-foreground">
+                                            {selected.email}
+                                        </dd>
                                     )}
                                 </div>
                                 <div>
-                                    <dt className="text-xs text-muted-foreground uppercase">Service</dt>
-                                    <dd className="mt-2">{selected.serviceName}</dd>
+                                    <dt className="text-xs text-muted-foreground uppercase">
+                                        Service
+                                    </dt>
+                                    <dd className="mt-2">
+                                        {selected.serviceName}
+                                    </dd>
                                 </div>
                                 <div>
-                                    <dt className="text-xs text-muted-foreground uppercase">Event date</dt>
-                                    <dd className="mt-2">{formatDate(selected.eventDate)}</dd>
+                                    <dt className="text-xs text-muted-foreground uppercase">
+                                        Event date
+                                    </dt>
+                                    <dd className="mt-2">
+                                        {formatDate(selected.eventDate)}
+                                    </dd>
                                 </div>
                                 <div>
-                                    <dt className="text-xs text-muted-foreground uppercase">Event location</dt>
-                                    <dd className="mt-2">{selected.eventLocation}</dd>
+                                    <dt className="text-xs text-muted-foreground uppercase">
+                                        Event location
+                                    </dt>
+                                    <dd className="mt-2">
+                                        {selected.eventLocation}
+                                    </dd>
                                 </div>
                             </dl>
 
@@ -285,21 +363,30 @@ export default function VendorBookingRequestsView({
                             {selected.status === "pending" ? (
                                 <div className="mt-6 grid grid-cols-2 gap-3">
                                     <Button
-                                        onClick={() => updateStatus(selected, "accepted")}
+                                        onClick={() =>
+                                            updateStatus(selected, "accepted")
+                                        }
                                         disabled={updatingId === selected._id}
                                     >
                                         Accept request
                                     </Button>
                                     <Button
                                         variant="outline"
-                                        onClick={() => updateStatus(selected, "rejected")}
+                                        onClick={() =>
+                                            updateStatus(selected, "rejected")
+                                        }
                                         disabled={updatingId === selected._id}
                                     >
                                         Reject
                                     </Button>
                                 </div>
                             ) : (
-                                <p className={cn("mt-6 inline-flex rounded-full px-3 py-1 text-xs capitalize", statusClass[selected.status])}>
+                                <p
+                                    className={cn(
+                                        "mt-6 inline-flex rounded-full px-3 py-1 text-xs capitalize",
+                                        statusClass[selected.status],
+                                    )}
+                                >
                                     {selected.status}
                                 </p>
                             )}

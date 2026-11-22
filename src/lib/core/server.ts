@@ -35,6 +35,25 @@ export const protectedMutation = async (
     return result;
 };
 
+export const authFetch = async (api: string, options?: RequestInit) => {
+    const token = await getToken();
+    return fetch(api, {
+        ...options,
+        headers: {
+            ...options?.headers,
+            "authorization": `Bearer ${token}`,
+        },
+    });
+};
+
+export const getToken = async () => {
+    const session = await getSession();
+    if (!session || !session.session?.token) {
+        redirect("/unauthorized");
+    }
+    return session?.session?.token;
+};
+
 export const requireRole = async (userRole: string) => {
     const session = await getSession();
     if (!session || session?.user.userRole !== userRole) {
