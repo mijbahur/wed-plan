@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "@/components/services/service-card";
 import type { Service } from "@/lib/types";
+import Reveal from "../ui/reveal";
 
 export default function ServiceResults({ services }: { services: Service[] }) {
     const [sort, setSort] = useState("recommended");
@@ -43,8 +44,10 @@ export default function ServiceResults({ services }: { services: Service[] }) {
 
             {sortedServices.length ? (
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    {sortedServices.map((service) => (
-                        <ServiceCard key={service._id} service={service} />
+                    {sortedServices.map((service, index) => (
+                        <Reveal key={service._id} delay={index * 0.08}>
+                            <ServiceCard service={service} />
+                        </Reveal>
                     ))}
                 </div>
             ) : (

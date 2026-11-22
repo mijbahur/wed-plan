@@ -18,7 +18,7 @@ export default function PaymentCancelPage() {
                 you are ready.
             </p>
             <Button className="mt-8">
-                <Link href="/dashboard/subscription">Back to Subscription</Link>
+                <Link href="/dashboard/vendor/subscription">Back to Subscription</Link>
             </Button>
         </div>
     );

@@ -7,7 +7,6 @@ import { checkoutVerify } from "@/lib/action/payments";
 import { Button } from "@/components/ui/button";
 
 export const instant = false;
-
 export default async function checkoutSuccessPage({
     searchParams,
 }: {
@@ -15,8 +14,9 @@ export default async function checkoutSuccessPage({
 }) {
     const { session_id } = await searchParams;
 
-    if (!session_id)
-        throw new Error("Please provide a valid session_id (`cs_test_...`)");
+    if (!session_id) {
+        redirect("/checkout/cancel");
+    }
 
     await connection();
 
@@ -30,12 +30,15 @@ export default async function checkoutSuccessPage({
         expand: ["line_items", "payment_intent"],
     });
 
-    if (status === "open") {
-        return redirect("/");
+    if (status !== "complete" || payment_status !== "paid") {
+        redirect("/checkout/cancel");
     }
 
-    if (status === "complete" && payment_status === "paid") {
-        const result = await checkoutVerify(session_id);
+    const result = await checkoutVerify(session_id);
+    if (!result.success) {
+        redirect("/checkout/cancel");
+    }
+
         return (
             <main className="flex min-h-[70vh] items-center justify-center bg-cream px-4 py-16">
                 <section className="w-full max-w-xl rounded-2xl border bg-card p-8 text-center shadow-sm sm:p-12">
@@ -112,7 +115,4 @@ export default async function checkoutSuccessPage({
                 </section>
             </main>
         );
-    }
-
-    return redirect("/checkout");
 }
