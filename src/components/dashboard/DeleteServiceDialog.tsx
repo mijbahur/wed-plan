@@ -27,7 +27,6 @@ export function DeleteServiceDialog({ service }: { service: VendorService }) {
     const handleDelete = async () => {
         try {
             const response = await deleteService(service._id);
-            console.log("deleteService response", response);
             if(response.success) {
                 toast.success("Service deleted successfully");
                 setOpen(false);

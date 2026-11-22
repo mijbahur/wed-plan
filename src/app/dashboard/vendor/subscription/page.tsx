@@ -12,7 +12,6 @@ import { getSession } from "@/lib/core/server";
 import { redirect } from "next/navigation";
 
 export const instant = false;
-
 export default async function VendorSubscriptionPage() {
     const session = await getSession();
     const user = session?.user;

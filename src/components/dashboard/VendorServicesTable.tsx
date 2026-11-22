@@ -104,7 +104,6 @@ export default function VendorServicesTable({
                                                 }
                                                 onCheckedChange={async (checked) => {
                                                     try {
-                                                        console.log("Updating service availability:", service._id, checked, service);
                                                         const response = await updateService(service._id, { status: checked ? "true" : "false" });
                                                         if (!response.success) {
                                                             throw new Error(response.message || "Failed to update service availability");
@@ -115,7 +114,6 @@ export default function VendorServicesTable({
                                                         if (response.success && !checked) {
                                                             toast.error("Service is now inactive and hidden from customers.");
                                                         }
-                                                        console.log("Service availability updated:", response);
                                                     } catch (error) {
                                                         console.error("Error updating service:", error);
                                                     }

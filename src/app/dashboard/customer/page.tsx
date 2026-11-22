@@ -1,7 +1,4 @@
-import React from 'react';
-
-export const instant = false;
-
+// //export const instant = false;
 const CustomerDashboardPage = () => {
     return (
         <div>

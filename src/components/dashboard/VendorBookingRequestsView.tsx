@@ -58,34 +58,6 @@ export default function VendorBookingRequestsView({
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
 
-    // useEffect(() => {
-    //     let active = true;
-
-    //     getVendorBookings(vendorId)
-    //         .then((data) => {
-    //             if (!active) return;
-    //             setBookings(data);
-    //             setError(null);
-    //             setSelectedId((current) =>
-    //                 current && data.some((item) => item._id === current)
-    //                     ? current
-    //                     : (data[0]?._id ?? null),
-    //             );
-    //         })
-    //         .catch((e) => {
-    //             if (!active) return;
-    //             setError(
-    //                 e instanceof Error ? e.message : "Failed to load requests",
-    //             );
-    //         })
-    //         .finally(() => {
-    //             if (active) setLoading(false);
-    //         });
-
-    //     return () => {
-    //         active = false;
-    //     };
-    // }, [vendorId, reloadKey]);
 useEffect(() => {
     let active = true;
 

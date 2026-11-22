@@ -1,7 +1,7 @@
-import { protectedMutation } from "../core/server";
+"use server";
+import { BASE_URL } from "../config/api";
+import { authFetch, protectedMutation } from "../core/server";
 import { CreateServiceInput } from "../types";
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
 export const getServices = async (query: string = '') => {
     const res = await fetch(`${BASE_URL}/api/services?${query}`);
@@ -12,7 +12,7 @@ export const getServices = async (query: string = '') => {
 }  
 
 export const getServiceCount = async ( query: string = '' ) => {
-    const res = await fetch(`${BASE_URL}/api/services/count?${query}`);
+    const res = await authFetch(`${BASE_URL}/api/services/count?${query}`);
     if (!res.ok) {
         throw new Error("Failed to fetch service count");
     }

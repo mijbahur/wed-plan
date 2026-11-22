@@ -36,7 +36,6 @@ export default async function checkoutSuccessPage({
 
     if (status === "complete" && payment_status === "paid") {
         const result = await checkoutVerify(session_id);
-        console.log("checkoutSuccessPage checkoutVerify", result);
         return (
             <main className="flex min-h-[70vh] items-center justify-center bg-cream px-4 py-16">
                 <section className="w-full max-w-xl rounded-2xl border bg-card p-8 text-center shadow-sm sm:p-12">

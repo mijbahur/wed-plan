@@ -4,7 +4,6 @@ import type { Service } from "@/lib/types";
 import { notFound } from "next/navigation";
 
 export const instant = false;
-
 export default async function EditServicePage({
     params,
 }: {

@@ -2,25 +2,22 @@
 import { headers } from "next/headers";
 import { auth } from "../auth";
 import { BASE_URL } from "../config/api";
+import { authFetch } from "../core/server";
 
 export const getUser = async () => {
     const users = await auth.api.listUsers({
         query: {
-            // searchField: "name", // The field to search in, defaults to email. Can be `email` or `name`.
-            sortBy: "name", // The field to sort by.
-            sortDirection: "desc", // The direction to sort by.
-            filterField: "userRole", // The field to filter by.
-            // filterValue: "", // The value to filter by.
-            // filterOperator: "eq", // The operator to use for the filter.
+            sortBy: "name",
+            sortDirection: "desc",
+            filterField: "userRole",
         },
-        // This endpoint requires session cookies.
         headers: await headers(),
     });
     return users;
 };
 
 export const getUserPremiumById = async (userId: string) => {
-    const res = await fetch(`${BASE_URL}/api/users/${userId}/premium`, {
+    const res = await authFetch(`${BASE_URL}/api/users/${userId}/premium`, {
         cache: "no-store",
     });
     return res.json();

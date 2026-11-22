@@ -76,6 +76,12 @@ export function SidebarContent() {
                 >
                     <Globe className="size-4" /> Back to website
                 </Link>
+                <p className="text-sm font-medium">
+                    {session?.user?.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                    {session?.user?.email}
+                </p>
                 <Button
                     type="button"
                     variant="ghost"

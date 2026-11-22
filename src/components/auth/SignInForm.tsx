@@ -13,9 +13,9 @@ import { AuthVisual } from "@/components/auth/AuthVisual";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleButton } from "@/components/auth/GoogleButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 
 export default function SignInPage() {
@@ -26,6 +26,20 @@ export default function SignInPage() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { data: session, isPending } = useSession();
+
+    useEffect(() => {
+        if (isPending || !session) return;
+
+        const role = session.user.userRole;
+        router.replace(
+            role === "vendor"
+                ? "/dashboard/vendor"
+                : role === "admin"
+                  ? "/dashboard/admin"
+                  : "/dashboard/customer",
+        );
+    }, [isPending, router, session]);
 
     const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -35,9 +49,6 @@ export default function SignInPage() {
             email: string;
             password: string;
         };
-
-        console.log("formData", formData);
-        console.log("user", user);
 
         setIsSubmitting(true);
 
@@ -57,6 +68,8 @@ export default function SignInPage() {
         router.push("/");
         router.refresh();
     };
+
+    if (session) return null;
 
     return (
         <main className="grid min-h-dvh bg-white lg:grid-cols-[44%_56%]">

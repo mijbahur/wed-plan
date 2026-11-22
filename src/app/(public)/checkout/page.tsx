@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { PREMIUM_PLAN_FEATURES, PREMIUM_PRICE } from "@/lib/constants";
 
 export const instant = false;
-
 export default async function CheckoutPage({
     searchParams,
 }: {

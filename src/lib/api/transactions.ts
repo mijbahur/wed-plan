@@ -1,8 +1,9 @@
 import { BASE_URL } from "../config/api";
+import { authFetch } from "../core/server";
 
 
 export const getAllTransactions = async () => {
-    const res = await fetch(`${BASE_URL}/api/transactions`, { cache: "no-store" });
+    const res = await authFetch(`${BASE_URL}/api/transactions`, { cache: "no-store" });
     if (!res.ok) {
         throw new Error("Failed to load all transactions");
     }

@@ -6,7 +6,6 @@ import { getServices } from "@/lib/api/service";
 import type { Service } from "@/lib/types";
 
 export const instant = false;
-
 export default async function ServicesPage({
     searchParams,
 }: {
@@ -25,7 +24,6 @@ export default async function ServicesPage({
         ? result
         : result?.data ?? [];
 
-        console.log("services", services);
     return (
         <div className="bg-cream">
             <section className="bg-beige">

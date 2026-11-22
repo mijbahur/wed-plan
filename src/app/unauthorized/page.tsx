@@ -5,7 +5,7 @@ import BackButton from "@/components/back-button";
 export default function UnauthorizedPage() {
     return (
         <main className="flex min-h-screen items-center justify-center bg-cream px-4 py-10">
-            <div className="w-full max-w-[500px] rounded-md border border-border bg-white px-6 py-10 text-center sm:px-10">
+            <div className="w-full max-w-125 rounded-md border border-border bg-white px-6 py-10 text-center sm:px-10">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-plum-tint">
                     <ShieldAlert className="h-5 w-5 text-plum" />
                 </div>

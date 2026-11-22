@@ -14,7 +14,7 @@ import { AuthVisual } from "@/components/auth/AuthVisual";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleButton } from "@/components/auth/GoogleButton";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,12 +36,26 @@ export default function SignUpPage() {
     const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
     const [profilePreview, setProfilePreview] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const { data: session, isPending } = useSession();
 
     useEffect(() => {
         return () => {
             if (profilePreview) URL.revokeObjectURL(profilePreview);
         };
     }, [profilePreview]);
+
+    useEffect(() => {
+        if (isPending || !session) return;
+
+        const role = session.user.userRole;
+        router.replace(
+            role === "vendor"
+                ? "/dashboard/vendor"
+                : role === "admin"
+                  ? "/dashboard/admin"
+                  : "/dashboard/customer",
+        );
+    }, [isPending, router, session]);
 
     const update = (field: keyof typeof form, value: string) =>
         setForm((current) => ({ ...current, [field]: value }));
@@ -96,6 +110,8 @@ export default function SignUpPage() {
             router.push("/signin");
         }, 3000);
     };
+
+    if (session) return null;
 
     return (
         <main className="grid min-h-dvh bg-white lg:grid-cols-[44%_56%]">

@@ -7,7 +7,6 @@ import type { Service } from "@/lib/types";
 import ServiceInfoCard from "@/components/services/service-info-card";
 
 export const instant = false;
-
 export default async function ServiceDetailsPage({
     params,
 }: {

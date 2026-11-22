@@ -7,7 +7,6 @@ import { getServiceById } from "@/lib/api/service";
 import type { Service } from "@/lib/types";
 
 export const instant = false;
-
 export default async function BookingPage({
     params,
 }: {

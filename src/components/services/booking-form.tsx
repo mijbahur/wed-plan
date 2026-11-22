@@ -32,7 +32,6 @@ export default function BookingForm({ service }: { service: Service }) {
                 customerId: session?.user.id,
                 email: session?.user.email,
             } as CreateBookingInput);
-            console.log("booking", booking);
             if (booking.success === true) {
                 toast.success("Booking request sent");
                 router.push("/dashboard/customer");

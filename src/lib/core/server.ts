@@ -19,6 +19,7 @@ export const protectedMutation = async (
         method: method,
         headers: {
             "content-type": "application/json",
+            "authorization": `Bearer ${await getToken()}`,
         },
         body: data ? JSON.stringify(data) : null,
     });
@@ -37,13 +38,17 @@ export const protectedMutation = async (
 
 export const authFetch = async (api: string, options?: RequestInit) => {
     const token = await getToken();
-    return fetch(api, {
+    const res = await fetch(api, {
         ...options,
         headers: {
             ...options?.headers,
             "authorization": `Bearer ${token}`,
         },
     });
+    if (res.status === 401 || res.status === 403) {
+        redirect("/unauthorized");
+    }
+    return res;
 };
 
 export const getToken = async () => {

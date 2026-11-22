@@ -30,7 +30,6 @@ export async function uploadImage(file: File): Promise<string> {
         method: "POST",
         body: uploadData,
     });
-    console.log("Upload image response:", response);
 
     const result = (await response.json()) as UploadImageResponse;
 

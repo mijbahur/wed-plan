@@ -4,7 +4,6 @@ import { getSession } from "@/lib/core/server";
 import type { AdminUser } from "@/lib/types";
 
 export const instant = false;
-
 const AdminDashboardPage = async () => {
     const result = await getUser();
     const session = await getSession();

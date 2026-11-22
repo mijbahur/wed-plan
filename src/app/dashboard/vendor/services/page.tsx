@@ -8,7 +8,6 @@ import { VendorService } from "@/lib/types";
 import { getSession } from "@/lib/core/server";
 
 export const instant = false;
-
 export default async function ManageServicesPage() {
     const session = await getSession();
     const user = session?.user;

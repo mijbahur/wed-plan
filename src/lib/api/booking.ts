@@ -1,9 +1,12 @@
+"use server";
 import { BASE_URL } from "../config/api";
-import { authFetch, getToken, protectedMutation } from "../core/server";
+import { authFetch, protectedMutation } from "../core/server";
 import { Booking, CreateBookingInput } from "../types";
 
 export const getAllBookings = async (): Promise<Booking[]> => {
-    const res = await authFetch(`${BASE_URL}/api/bookings`, { cache: "no-store" });
+    const res = await authFetch(`${BASE_URL}/api/bookings`, {
+        cache: "no-store",
+    });
     if (!res.ok) {
         throw new Error("Failed to load all bookings");
     }
@@ -12,22 +15,14 @@ export const getAllBookings = async (): Promise<Booking[]> => {
 };
 
 export const createBooking = async (data: CreateBookingInput) => {
-    return protectedMutation(
-        `${BASE_URL}/api/bookings`,
-        "POST",
-        data,
-    );
+    return protectedMutation(`${BASE_URL}/api/bookings`, "POST", data);
 };
 
 // Bookings belonging to the signed in customer
 export const getMyBookings = async (customerId: string): Promise<Booking[]> => {
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/api/bookings?customerId=${encodeURIComponent(customerId)}`,
-                { cache: "no-store",
-            headers: {
-                "authorization": `Bearer ${await getToken()}`,
-            },
-        },
+        { cache: "no-store" },
     );
 
     if (!res.ok) {
@@ -41,13 +36,9 @@ export const getMyBookings = async (customerId: string): Promise<Booking[]> => {
 export const getVendorBookings = async (vendorId: string): Promise<Booking[]> => {
     if (!vendorId) return [];
 
-    const res = await fetch(
+    const res = await authFetch(
         `${BASE_URL}/api/bookings?vendorId=${encodeURIComponent(vendorId)}`,
-        { cache: "no-store",
-            headers: {
-                "authorization": `Bearer ${await getToken()}`,
-            },
-        },
+        { cache: "no-store", },
     );
     if (!res.ok) {
         throw new Error("Failed to load booking requests");

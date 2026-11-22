@@ -62,7 +62,6 @@ export interface CreateServiceInput {
     price: number;
     location: string;
     images: string[];
-    // Temporary until the JWT middleware sets the vendor from the token
     vendorId?: string;
 }
 
