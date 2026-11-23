@@ -19,6 +19,23 @@ export type User = {
     createdAt?: string | Date;
 };
 
+export type Profile = {
+    id: string;
+    name: string;
+    email: string;
+    image: string;
+    userRole: Role;
+    createdAt: string | null;
+    phone: string;
+    location: string;
+    businessName: string;
+    description: string;
+    website: string;
+    subscriptionPlan: string;
+};
+
+export type ProfileUpdateInput = Pick<Profile, "name" | "image" | "phone" | "location" | "businessName" | "description" | "website">;
+
 export type ServiceStatus = "pending" | "approved" | "rejected";
 
 export interface Vendor {

@@ -30,7 +30,9 @@ export const protectedMutation = async (
 
     const result = await res.json();
     if (!res.ok) {
-        throw new Error(result?.error?.message || "Request failed");
+        throw new Error(
+            result?.error?.message || result?.message || "Request failed",
+        );
     }
 
     return result;

@@ -158,7 +158,7 @@ export default function Navbar() {
                                 <LayoutDashboard /> Dashboard
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                render={<Link href="/settings" />}
+                                render={<Link href="/dashboard/profile" />}
                             >
                                 <UserCog /> Profile Settings
                             </DropdownMenuItem>
@@ -255,7 +255,7 @@ export default function Navbar() {
                                         Dashboard
                                     </SheetClose>
                                     <SheetClose
-                                        render={<Link href="/settings" />}
+                                        render={<Link href="/dashboard/profile" />}
                                         nativeButton={false}
                                         className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
                                     >
