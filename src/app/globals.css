@@ -1,6 +1,8 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+    color-scheme: light;
     /* Brand */
     --wp-plum: #6b4559; /* primary: buttons, links, active states */
     --wp-plum-dark: #54344a; /* hover / pressed */
@@ -67,6 +69,8 @@
     --color-foreground: var(--foreground);
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
+    --color-ink: var(--wp-ink);
+    --color-ink-soft: var(--wp-ink-soft);
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
     --color-primary: var(--primary);
@@ -178,4 +182,60 @@
     html {
         scroll-behavior: auto;
     }
+}
+
+.dark .bg-white {
+    background-color: var(--wp-white);
+}
+
+.dark {
+    color-scheme: dark;
+
+    --wp-plum: #865e74;
+    --wp-plum-dark: #6f4a60;
+    --wp-plum-soft: #c29bad;
+    --wp-plum-tint: #382a32;
+    --wp-cream: #171316;
+    --wp-beige: #241e22;
+    --wp-white: #201b1e;
+    --wp-ink: #f6eff2;
+    --wp-ink-soft: #c2b2b9;
+    --wp-line: #463941;
+    --wp-success: #65ad7d;
+    --wp-warning: #d4a751;
+    --wp-danger: #e47773;
+    --wp-info: #79a2ca;
+    --chart-1: #c29bad;
+    --chart-2: #927184;
+    --chart-3: #c9a27e;
+    --chart-4: #8a9a86;
+    --chart-5: #79a2ca;
+
+    --background: #171316;
+    --foreground: #f6eff2;
+    --card: #201b1e;
+    --card-foreground: #f6eff2;
+    --popover: #201b1e;
+    --popover-foreground: #f6eff2;
+    --primary: #865e74;
+    --primary-foreground: #ffffff;
+    --secondary: #241e22;
+    --secondary-foreground: #f6eff2;
+    --muted: #241e22;
+    --muted-foreground: #c2b2b9;
+    --accent: #382a32;
+    --accent-foreground: #f6eff2;
+    --destructive: #e47773;
+    --border: #463941;
+    --input: #463941;
+    --ring: #c29bad;
+
+    --sidebar: #241e22;
+    --sidebar-foreground: #f6eff2;
+    --sidebar-primary: #865e74;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #382a32;
+    --sidebar-accent-foreground: #f6eff2;
+    --sidebar-border: #463941;
+    --sidebar-ring: #c29bad;
 }

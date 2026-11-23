@@ -13,6 +13,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { LoadingBlock } from "@/components/states";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import type { Role } from "@/lib/types";
+import ThemeToggle from "@/components/theme-toggle";
 
 export default function DashboardLayout({
     children,
@@ -68,6 +69,7 @@ export default function DashboardLayout({
                         </span>
                     </div>
                     <div className="flex items-center gap-3">
+                        <ThemeToggle />
                         <span className="hidden text-sm sm:block">
                             {session.user.name}
                         </span>

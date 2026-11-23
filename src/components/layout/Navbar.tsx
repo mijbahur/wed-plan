@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/user-avatar";
 import { toast } from "sonner";
+import ThemeToggle from "@/components/theme-toggle";
 
 const publicNavigation = [
     { label: "Home", href: "/" },
@@ -77,7 +78,7 @@ export default function Navbar() {
     }
 
     return (
-        <header className="sticky top-0 z-40 border-b border-border/80 bg-white/95 backdrop-blur-md">
+        <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-md">
             <nav
                 aria-label="Primary navigation"
                 className="wp-container flex h-20 items-center justify-between font-sans"
@@ -89,7 +90,7 @@ export default function Navbar() {
                     <span className="flex size-9 items-center justify-center rounded-full bg-plum-tint text-plum">
                         <GemIcon aria-hidden="true" className="size-5" />
                     </span>
-                    <span className="font-heading text-[1.65rem] leading-none font-semibold text-plum-dark">
+                    <span className="font-heading text-[1.65rem] leading-none font-semibold text-plum-dark dark:text-foreground">
                         WedPlan
                     </span>
                 </Link>
@@ -121,68 +122,71 @@ export default function Navbar() {
                     })}
                 </div>
 
-                {isPending ? (
-                    <div
-                        aria-label="Loading account"
-                        className="hidden h-9 w-24 animate-pulse rounded-md bg-beige md:block"
-                    />
-                ) : session ? (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer">
-                            <UserAvatar
-                                name={session.user.name}
-                                image={session.user.image}
+                <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    {isPending ? (
+                        <div
+                            aria-label="Loading account"
+                            className="hidden h-9 w-24 animate-pulse rounded-md bg-beige md:block"
+                        />
+                    ) : session ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer">
+                                <UserAvatar
+                                    name={session.user.name}
+                                    image={session.user.image}
+                                />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuLabel className="flex items-center gap-3">
+                                        <UserAvatar
+                                            name={session.user.name}
+                                            image={session.user.image}
+                                        />
+                                        <span className="min-w-0">
+                                            <span className="block truncate text-sm">
+                                                {session.user.name}
+                                            </span>
+                                            <span className="block truncate text-xs font-normal capitalize text-muted-foreground">
+                                                {session.user.userRole}
+                                            </span>
+                                        </span>
+                                    </DropdownMenuLabel>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    render={<Link href={dashboardHref} />}
+                                >
+                                    <LayoutDashboard /> Dashboard
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    render={<Link href="/dashboard/profile" />}
+                                >
+                                    <UserCog /> Profile Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={logout}>
+                                    <LogOut /> Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <div className="hidden items-center gap-3 md:flex">
+                            <Button
+                                variant="ghost"
+                                nativeButton={false}
+                                className="h-10 px-4 text-plum hover:text-plum-dark"
+                                render={<Link href="/signin">Sign In</Link>}
                             />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuGroup>
-                                <DropdownMenuLabel className="flex items-center gap-3">
-                                    <UserAvatar
-                                        name={session.user.name}
-                                        image={session.user.image}
-                                    />
-                                    <span className="min-w-0">
-                                        <span className="block truncate text-sm">
-                                            {session.user.name}
-                                        </span>
-                                        <span className="block truncate text-xs font-normal capitalize text-muted-foreground">
-                                            {session.user.userRole}
-                                        </span>
-                                    </span>
-                                </DropdownMenuLabel>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                render={<Link href={dashboardHref} />}
-                            >
-                                <LayoutDashboard /> Dashboard
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                render={<Link href="/dashboard/profile" />}
-                            >
-                                <UserCog /> Profile Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={logout}>
-                                <LogOut /> Logout
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                ) : (
-                    <div className="hidden items-center gap-3 md:flex">
-                        <Button
-                            variant="ghost"
-                            nativeButton={false}
-                            className="h-10 px-4 text-plum hover:text-plum-dark"
-                            render={<Link href="/signin">Sign In</Link>}
-                        />
-                        <Button
-                            nativeButton={false}
-                            className="h-10 rounded-md px-5 shadow-sm"
-                            render={<Link href="/signup">Get Started</Link>}
-                        />
-                    </div>
-                )}
+                            <Button
+                                nativeButton={false}
+                                className="h-10 rounded-md px-5 shadow-sm"
+                                render={<Link href="/signup">Get Started</Link>}
+                            />
+                        </div>
+                    )}
+                </div>
 
                 <Sheet>
                     <SheetTrigger
@@ -213,7 +217,7 @@ export default function Navbar() {
                                             className="size-5"
                                         />
                                     </span>
-                                    <span className="font-heading text-[1.65rem] leading-none font-semibold text-plum-dark">
+                                    <span className="font-heading text-[1.65rem] leading-none font-semibold text-plum-dark dark:text-foreground">
                                         WedPlan
                                     </span>
                                 </Link>

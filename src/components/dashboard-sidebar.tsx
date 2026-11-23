@@ -41,7 +41,7 @@ export function SidebarContent() {
 
     return (
         <div className="flex h-full flex-col p-5">
-            <Link href="/" className="font-serif text-3xl text-primary">
+            <Link href="/" className="font-serif text-3xl text-primary dark:text-foreground">
                 WedPlan
             </Link>
             <p className="mb-3 mt-8 text-xs font-medium uppercase tracking-widest text-muted-foreground">

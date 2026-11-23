@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import ThemeProvider from "@/components/theme-provider";
 
 const dmSans = DM_Sans({
     variable: "--font-body",
@@ -25,11 +26,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             lang="en"
             className={`${dmSans.variable} ${cormorantGaramond.variable} h-full antialiased`}
             data-scroll-behavior="smooth"
+            suppressHydrationWarning
         >
             <body className="min-h-full flex flex-col">
-                {children}
-                <Toaster />
-                
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                    {children}
+                    <Toaster />
+                </ThemeProvider>
             </body>
         </html>
     );

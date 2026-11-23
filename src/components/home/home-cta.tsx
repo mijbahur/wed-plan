@@ -20,7 +20,7 @@ export default function HomeCTA() {
                     variant="secondary"
                     className="h-11 bg-cream px-5 text-xs font-medium text-plum hover:bg-white"
                 >
-                    <Link href="/services">
+                    <Link href="/services" className="flex items-center gap-2 text-plum hover:text-plum-dark">
                         Explore wedding services
                         <ArrowUpRight size={14} />
                     </Link>
