@@ -79,6 +79,20 @@ export type Transaction = {
     payment_intent?: string;
 };
 
+export type TransactionPayload = {
+    _id: string;
+    stripeSessionId: string;
+    vendorId: string;
+    vendorName: string;
+    vendorEmail: string;
+    plan: string;
+    amount: number | null;
+    currency: string;
+    status: string;
+    createdAt: Date;
+    paidAt: Date;
+}
+
 export interface Booking {
     _id: string;
     serviceId: string;

@@ -21,7 +21,7 @@ import UserTableRow from "./UserTableRow";
 type StatusFilter = "all" | "active" | "blocked";
 type RoleFilter = "all" | Role;
 
-type ManageUsersTableProps = {
+type AdminManageUsersTableProps = {
     users: AdminUser[];
     currentUserId?: string;
     onRoleChange?: (user: AdminUser, userRole: Role) => void | Promise<void>;
@@ -31,12 +31,12 @@ type ManageUsersTableProps = {
     ) => void | Promise<void>;
 };
 
-export default function ManageUsersTable({
+export default function AdminManageUsersTable({
     users,
     currentUserId,
     onRoleChange,
     onStatusChange,
-}: ManageUsersTableProps) {
+}: AdminManageUsersTableProps) {
     const [search, setSearch] = useState("");
     const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");

@@ -1,7 +1,8 @@
 import { getUser } from "@/lib/api/user";
-import ManageUsersTable from "@/components/dashboard/ManageUsersTable";
+import AdminManageUsersTable from "@/components/dashboard/AdminManageUsersTable";
 import { getSession } from "@/lib/core/server";
 import type { AdminUser } from "@/lib/types";
+import Reveal from "@/components/ui/reveal";
 
 export const instant = false;
 const AdminDashboardPage = async () => {
@@ -26,16 +27,23 @@ const AdminDashboardPage = async () => {
 
     return (
         <div className="mx-auto max-w-7xl">
-            <header>
-                <h1 className="font-heading text-4xl font-medium">
-                    Manage users
-                </h1>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Keep your community safe, welcoming, and well managed.
-                </p>
-            </header>
+            <Reveal>
+                <header>
+                    <h1 className="font-heading text-4xl font-medium">
+                        Manage users
+                    </h1>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        Keep your community safe, welcoming, and well managed.
+                    </p>
+                </header>
+            </Reveal>
 
-            <ManageUsersTable users={users} currentUserId={session?.user.id} />
+            <Reveal delay={0.1}>
+                <AdminManageUsersTable
+                    users={users}
+                    currentUserId={session?.user.id}
+                />
+            </Reveal>
         </div>
     );
 };
