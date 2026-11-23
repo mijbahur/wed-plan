@@ -46,8 +46,10 @@ const statusClass: Record<BookingStatus, string> = {
 
 export default function VendorBookingRequestsView({
     vendorId,
+    initialSelectedId,
 }: {
     vendorId: string;
+    initialSelectedId?: string;
 }) {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [tab, setTab] = useState<Tab>("all");
@@ -68,7 +70,11 @@ useEffect(() => {
             setBookings(data);
             setError(null);
             setSelectedId((cur) =>
-                data.some((b) => b._id === cur) ? cur : (data[0]?._id ?? null),
+                data.some((booking) => booking._id === initialSelectedId)
+                    ? initialSelectedId ?? null
+                    : data.some((booking) => booking._id === cur)
+                      ? cur
+                      : (data[0]?._id ?? null),
             );
         } catch (e) {
             if (active) {
@@ -82,7 +88,7 @@ useEffect(() => {
     return () => {
         active = false;
     };
-}, [vendorId, reloadKey]);
+}, [vendorId, reloadKey, initialSelectedId]);
     const counts = useMemo(() => {
         const result: Record<Tab, number> = {
             all: bookings.length,
@@ -232,7 +238,7 @@ useEffect(() => {
                                 className={cn(
                                     "grid w-full grid-cols-[minmax(0,1fr)_120px_90px] gap-4 border-b border-border px-5 py-5 text-left transition-colors last:border-b-0",
                                     selected?._id === booking._id
-                                        ? "bg-primary/4"
+                                        ? "bg-primary/10 ring-1 ring-inset ring-primary/20"
                                         : "hover:bg-muted/30",
                                 )}
                             >

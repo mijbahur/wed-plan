@@ -26,6 +26,7 @@ export default async function checkoutSuccessPage({
         customer_email,
         payment_intent,
         amount_total,
+        currency,
     } = await stripe.checkout.sessions.retrieve(session_id, {
         expand: ["line_items", "payment_intent"],
     });
@@ -88,7 +89,7 @@ export default async function checkoutSuccessPage({
                                 Total Amount
                             </span>
                             <span className="font-medium text-success">
-                                {amount_total}
+                                {Number(amount_total)/100 } {currency === "usd" ?  "$" : currency?.toUpperCase() || ""}
                             </span>
                         </div>
                     </div>
