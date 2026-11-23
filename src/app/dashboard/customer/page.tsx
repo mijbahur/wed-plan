@@ -1,10 +1,8 @@
-// //export const instant = false;
+import CustomerDashboard from "@/components/customer-overview/customer-dashboard";
+
+export const instant = false;
 const CustomerDashboardPage = () => {
-    return (
-        <div>
-            <h1>Customer Page</h1>
-        </div>
-    );
+    return <CustomerDashboard />;
 };
 
 export default CustomerDashboardPage;
